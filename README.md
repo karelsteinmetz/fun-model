@@ -29,6 +29,7 @@ I spent long time in last month in flux like libraries and there is my notes for
 * 1 store with 1 application state
 * application state is composition of substates
 * action calls has specified cursor and own handler function
+ * immutability
  * replaces part of global state
  * creates new state instance
 * Bobril and ReactJs is only rendering tool
