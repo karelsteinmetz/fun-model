@@ -36,6 +36,10 @@ I spent long time in last month in flux like libraries and there is my notes for
  * "components are stateless"
 * support for unit testing
 
+## Lifecycle
+
+![](./doc/img/flux_like.png)
+
 ### Immutable or Mutable?
 * immutable object is object that its sub objects can't be never mutated.
 * otherwise if you have mutable object you can do everything with its sub objects.
@@ -48,5 +52,11 @@ I spent long time in last month in flux like libraries and there is my notes for
    * just create new array
   ```
   let newInstanceOfArrayState = [...oldArrayState, newItem]; // it's pretty easy  
-  let oldStateAsSameInstance = [...oldArrayState]; // beware doesn't work
+  let oldStateAsSameInstance = [...oldArrayState]; // beware doesn't work  
   ```
+
+![](./doc/img/mutation.png)
+
+![](./doc/img/deep_copy.png)
+
+![](./doc/img/shallow_copy.png)
