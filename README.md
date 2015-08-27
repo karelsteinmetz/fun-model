@@ -26,8 +26,9 @@ I spent long time in last month in flux like libraries and there is my notes for
 
 ## Notes
 ### Common keywords
-* 1 store with 1 application state
-* application state is composition of substates
+* 1 store with 1 global application state
+* application state is composition of sub states
+* cursors are pointers to sub states
 * action calls has specified cursor and own handler function
  * immutability
  * replaces part of global state
@@ -35,8 +36,18 @@ I spent long time in last month in flux like libraries and there is my notes for
 * Bobril and ReactJs is only rendering tool
  * "components are stateless"
 * support for unit testing
+* we need rendering (frame) for each visible modification
 
 ## Lifecycle
+* Store - persists global application state
+* Views/Pages - gui stateless components
+* Actions - creates new state or sub states in global application state
+  * Cursors - pointers to sub states
+  * Handlers - new state creators which gets current state for specific cursor and gives new instance of the same state type
+* Action creator
+  * gets state for handlers by cursor from global state
+  * sets new state from handlers
+  * if new state isn't same as previous frame then calls render for new frame
 
 ![](./doc/img/flux_like.png)
 
@@ -55,8 +66,21 @@ I spent long time in last month in flux like libraries and there is my notes for
   let oldStateAsSameInstance = [...oldArrayState]; // beware doesn't work  
   ```
 
+#### The common mutability
+* let's call action which changes name of third group in graph component
+
 ![](./doc/img/mutation.png)
 
+* next frame renders all components of application (we haven't got router for page 1 to page N)
+* router might be optimization for question, What should be rendered again in next frame?
+  * renders only one page which is derived from current url
+* what we can do with page rendering optimization?
+ * immutability and instance comparing might be option
+
+#### The immutability with deep copy
+
 ![](./doc/img/deep_copy.png)
+
+#### The immutability with shallow copy
 
 ![](./doc/img/shallow_copy.png)
