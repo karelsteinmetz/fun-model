@@ -35,3 +35,18 @@ I spent long time in last month in flux like libraries and there is my notes for
 * Bobril and ReactJs is only rendering tool
  * "components are stateless"
 * support for unit testing
+
+### Immutable or Mutable?
+* immutable object is object that its sub objects can't be never mutated.
+* otherwise if you have mutable object you can do everything with its sub objects.
+* e.g. push new item into array:
+ * mutable:
+ ```
+ let newLength = array.push(newItem)
+ ```
+ * immutable:
+   * just create new array
+  ```
+  let newInstanceOfArrayState = [...oldArrayState, newItem]; // it's pretty easy  
+  let oldStateAsSameInstance = [...oldArrayState]; // beware doesn't work
+  ```
