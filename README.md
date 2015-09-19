@@ -4,7 +4,7 @@
 I spent long time in flux like libraries last month and there are my notes for presentation purposes. I hope that it would be helpful for you in your decisions about flux. Why FUN?
 * f - functional
 * u - unidirectional
-* n - I don't know
+* n - whatever
 * model - just Model or ViewModel
 
 ## Resources
