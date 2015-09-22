@@ -1,4 +1,6 @@
-export interface IState {	
+import * as h from './helpers';
+
+export interface IState {
 }
 
 export interface ICursor<TState extends IState> {
@@ -35,14 +37,6 @@ export let getState = <TState extends IState>(cursor: ICursor<TState>): TState =
         : getInnerState(state, cursor.key.split(stateSeparator)));
 };
 
-let copyStateProperties = <TState extends IState>(source: TState, target: TState = <TState>{}): TState => {
-  for (var property in source) {
-    if (source.hasOwnProperty(property))
-      target[property] = source[property];
-  }
-  return target;
-};
-
 export let setState = <TState extends IState>(cursor: ICursor<TState>, updatedState: TState) => {
     let setInnerState = <TInnerState extends IState>(innerState: TInnerState, path: string[]): TInnerState => {
         if (path.length === 0)
@@ -55,7 +49,7 @@ export let setState = <TState extends IState>(cursor: ICursor<TState>, updatedSt
         if (newSubState === innerState[subPath])
             return innerState;
 
-        let newState = <TInnerState>copyStateProperties(innerState);
+        let newState = h.shallowCopy(innerState);
         newState[subPath] = newSubState;
         return newState;
     };
