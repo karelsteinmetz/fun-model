@@ -25,7 +25,7 @@ describe('store', () => {
         describe('without booting', () => {
             it('throws if key does not exist', () => {
                 expect(() => s.getState<s.IState>(s.rootCursor))
-                    .toThrow('Default state must be set before first usage.');
+                    .toThrow('Default state must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).');
             });
         });
 
@@ -43,8 +43,8 @@ describe('store', () => {
             });
 
             it('throws if key does not exist', () => {
-                expect(() => s.getState<s.IState>({ key: 'cjm.randoms' }))
-                    .toThrow('Cursor key does not exist in state.');
+                expect(() => s.getState<s.IState>({ key: 'not.existing.key' }))
+                    .toThrow('State for cursor key (not.existing.key) does not exist.');
             });
 
             it('throws if cursor key is null', () => {
@@ -58,7 +58,7 @@ describe('store', () => {
         describe('without booting', () => {
             it('throws if key does not exist', () => {
                 expect(() => s.setState(s.rootCursor, {}))
-                    .toThrow('Default state must be set before first usage.');
+                    .toThrow('Default state must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).');
             });
         });
 
@@ -78,12 +78,12 @@ describe('store', () => {
 
             it('throws if cursor has not existing key', () => {
                 expect(() => s.setState({ key: 'invalid' }, {}))
-                    .toThrow('Cursor key does not exist in state.');
+                    .toThrow('State for cursor key (invalid) does not exist.');
             });
 
             it('throws if cursor has nested not existing key', () => {
                 expect(() => s.setState({ key: 'not.existing.key' }, {}))
-                    .toThrow('Cursor key does not exist in state.');
+                    .toThrow('State for cursor key (not.existing.key) does not exist.');
             });
 
             it('sets nested state by cursor', () => {

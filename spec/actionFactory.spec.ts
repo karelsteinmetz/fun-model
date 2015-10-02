@@ -4,35 +4,52 @@ import { createAction, bootstrap } from '../src/actionFactory';
 import { IState, ICursor } from '../src/store';
 
 describe('actionFactory', () => {
-    let renderCallback: () => void;
 
     beforeEach(() => {
         resetStore();
-        renderCallback = jasmine.createSpy('render');
-        bootstrap(renderCallback);
+
+        describe('createAction', () => {
+            it('throws if key does not exist', () => {
+                expect(() => {
+                    let testAction = createAction(CursorTestFixture, (state: INestedState) => {
+                        return state;
+                    });
+                    testAction();
+                }).toThrow('Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).');
+            });
+        });
     });
 
-    describe('createAction', () => {
+    describe('when renderCallback has been set', () => {
+        let renderCallback: () => void;
 
-        it('does not call render callback when state has not been changed', () => {
-            givenStore({ some: { nested: { state: 'value' } } });
-
-            let testAction = createAction(CursorTestFixture, (state: INestedState) => {
-                return state;
-            });
-            testAction();
-
-            expect(renderCallback).not.toHaveBeenCalled();
+        beforeEach(() => {
+            renderCallback = jasmine.createSpy('render');
+            bootstrap(renderCallback);
         });
 
-        it('calls render callback when state has been changed', () => {
-            givenStore({ some: { nested: { state: 'value' } } });
+        describe('createAction', () => {
 
-            let testAction = createAction(CursorTestFixture, (state: INestedState) => {
-                return { state: 'newValue' };
-            })();
+            it('does not call render callback when state has not been changed', () => {
+                givenStore({ some: { nested: { state: 'value' } } });
 
-            expect(renderCallback).toHaveBeenCalled();
+                let testAction = createAction(CursorTestFixture, (state: INestedState) => {
+                    return state;
+                });
+                testAction();
+
+                expect(renderCallback).not.toHaveBeenCalled();
+            });
+
+            it('calls render callback when state has been changed', () => {
+                givenStore({ some: { nested: { state: 'value' } } });
+
+                let testAction = createAction(CursorTestFixture, (state: INestedState) => {
+                    return { state: 'newValue' };
+                })();
+
+                expect(renderCallback).toHaveBeenCalled();
+            });
         });
     });
 
@@ -41,7 +58,7 @@ describe('actionFactory', () => {
     }
 
     function resetStore() {
-        s.bootstrap({ some: { nested: { state: null} } });
+        s.bootstrap({ some: { nested: { state: null } } });
     }
 });
 

@@ -20,17 +20,16 @@ export let bootstrap = (defaultState: IState, subStateSeparator: string = '.') =
     state = defaultState;
 };
 
-let getInnerState = (innerState: IState, path: string[]): IState => {
-    if (path.length === 0)
-        return innerState;
-
-    let subPath = path.shift();
-    checkSubstate(innerState, subPath);
-
-    return getInnerState(innerState[subPath], path);
-};
-
 export let getState = <TState extends IState>(cursor: ICursor<TState>): TState => {
+    let getInnerState = (innerState: IState, path: string[]): IState => {
+        if (path.length === 0)
+            return innerState;
+
+        let subPath = path.shift();
+        checkSubstate(innerState, subPath, cursor.key);
+
+        return getInnerState(innerState[subPath], path);
+    };
     checkDefaultStateAndCursor(cursor);
     return <TState>(cursor.key === rootStateKey
         ? state
@@ -43,7 +42,7 @@ export let setState = <TState extends IState>(cursor: ICursor<TState>, updatedSt
             return <any>updatedState;
 
         let subPath = path.shift();
-        checkSubstate(innerState, subPath);
+        checkSubstate(innerState, subPath, cursor.key);
 
         let newSubState = setInnerState(innerState[subPath], path);
         if (newSubState === innerState[subPath])
@@ -62,14 +61,14 @@ export let setState = <TState extends IState>(cursor: ICursor<TState>, updatedSt
         : setInnerState(state, cursor.key.split(stateSeparator));
 };
 
-function checkSubstate(s: IState, subPath: string) {
+function checkSubstate(s: IState, subPath: string, cursorKey: string) {
     if (!s[subPath])
-        throw 'Cursor key does not exist in state.';
+        throw `State for cursor key (${cursorKey}) does not exist.`;
 }
 
 function checkDefaultStateAndCursor<TState extends IState>(cursor: ICursor<TState>) {
     if (state === null)
-        throw 'Default state must be set before first usage.';
+        throw 'Default state must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).';
 
     if (cursor.key === null)
         throw 'Cursor key cannot be null.';
