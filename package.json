@@ -1,20 +1,32 @@
 {
   "name": "fun-model",
   "version": "0.0.1",
-  "description": "FUN-Model",
+  "description": "fun-model is pure functional implementation of FLUX architecture.",
+  "main": "dist/src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/karelsteinmetz/bobflux.git"
+  },
+  "keywords": [
+    "bobril",
+    "flux",
+    "es6"
+  ],
+  "author": {
+    "name": "Karel Steinmetz",
+    "email": "karel.steinmetz@gmail.com"
+  },
   "files": [
     "dist/src"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [
-    "Flux"
-  ],
   "dependencies": {},
   "devDependencies": {
     "gulp": "^3.9.0",
     "gulp-jasmine": "^2.0.1",
     "gulp-typescript": "^2.8.2"
-  }
+  },
+  "license": "MIT"
 }

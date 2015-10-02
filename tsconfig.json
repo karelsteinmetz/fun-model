@@ -2,7 +2,7 @@
     "version": "1.5.3",
     "compileOnSave": false,
     "compilerOptions": {
-        "target": "es3",
+        "target": "es5",
         "module": "commonjs",
         "outDir": "dist",
         "sourceMap": true,
@@ -30,7 +30,8 @@
         "!./typed/**/*",
         "!./node_modules/**/*",
         "!./**/*.d.ts",
-        "!./dist/**/*"
+        "!./dist/**/*",
+        "!./tests/**/*"
     ],
     "files": [
         "./spec/actionFactory.spec.ts",
