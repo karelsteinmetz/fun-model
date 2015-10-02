@@ -15,7 +15,7 @@ export function createAction<TState extends IState, TParam>(
     handler: (state: TState, t?: TParam) => TState
 ): IAction<TParam> {
     if (render === null)
-        throw 'RenderCallback must be set before first usage through bootstrap(() => { yourRenderCallback(); }).';
+        throw 'Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).';
     return <IAction<TParam>>((param?: TParam): void => {
         let oldState = getState(cursor);
         let newState = handler(oldState, param);

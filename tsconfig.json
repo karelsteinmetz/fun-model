@@ -1,5 +1,5 @@
 {
-    "version": "1.5.3",
+    "version": "1.6.2",
     "compileOnSave": false,
     "compilerOptions": {
         "target": "es5",
@@ -35,8 +35,10 @@
     ],
     "files": [
         "./spec/actionFactory.spec.ts",
+        "./spec/helpers.spec.ts",
         "./spec/store.spec.ts",
         "./src/actionFactory.ts",
+        "./src/helpers.ts",
         "./src/index.ts",
         "./src/store.ts"
     ]
