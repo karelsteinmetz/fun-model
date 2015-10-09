@@ -41,6 +41,14 @@ describe('store', () => {
 
                 expect(state).toBe('value');
             });
+            
+            it('returns nested state by cursor when current value of sub state is empty string', () => {
+                givenStore({ some: { nested: { state: '' } } });
+
+                let state = s.getState({ key: 'some.nested.state' });
+
+                expect(state).toBe('');
+            });
 
             it('throws if key does not exist', () => {
                 expect(() => s.getState<s.IState>({ key: 'not.existing.key' }))
@@ -88,6 +96,14 @@ describe('store', () => {
 
             it('sets nested state by cursor', () => {
                 givenStore({ some: { nested: { state: 'value' } } });
+
+                s.setState({ key: 'some' }, { nested: { state: 'newValue' } });
+
+                expect((s.getState(rootCursorTestFixture)).some.nested.state).toBe('newValue');
+            });
+            
+            it('sets nested state by cursor when current value of sub state is empty string', () => {
+                givenStore({ some: { nested: { state: '' } } });
 
                 s.setState({ key: 'some' }, { nested: { state: 'newValue' } });
 

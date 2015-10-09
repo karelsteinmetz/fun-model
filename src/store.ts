@@ -62,7 +62,7 @@ export let setState = <TState extends IState>(cursor: ICursor<TState>, updatedSt
 };
 
 function checkSubstate(s: IState, subPath: string, cursorKey: string) {
-    if (!s[subPath])
+    if (s[subPath] === undefined)
         throw `State for cursor key (${cursorKey}) does not exist.`;
 }
 
