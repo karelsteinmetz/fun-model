@@ -46,7 +46,12 @@ gulp.task('jamsineCoreCopy', function () {
         .pipe(gulp.dest(distDir + '/jasmine-core'));
 });
 
-gulp.task('testResourcesCopy', function () {
+gulp.task('testResourcesCopy', ['systemjsCopy'], function () {
     return gulp.src('resources/test/**/*')
+        .pipe(gulp.dest(distDir));
+});
+
+gulp.task('systemjsCopy', function () {
+    return gulp.src('node_modules/systemjs/dist/system.js')
         .pipe(gulp.dest(distDir));
 });
