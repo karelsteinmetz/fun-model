@@ -25,7 +25,8 @@
   "devDependencies": {
     "gulp": "^3.9.0",
     "gulp-jasmine": "^2.0.1",
-    "gulp-typescript": "^2.8.2"
+    "gulp-typescript": "^2.8.2",
+    "jasmine-core": "^2.3.4"
   },
   "license": "MIT"
 }

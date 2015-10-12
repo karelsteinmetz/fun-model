@@ -23,7 +23,7 @@ gulp.task('testTsCompilation', function () {
         .pipe(gulp.dest(testDir));
 });
 
-gulp.task('runTests', ['testTsCompilation'], function () {
+gulp.task('runTests', ['testTsCompilation', 'jamsineCoreCopy', 'testResourcesCopy'], function () {
     return gulp.src(testDir + '/spec/**/*.spec.js')
         .pipe(jasmine({
             verbose: true,
@@ -34,4 +34,19 @@ gulp.task('runTests', ['testTsCompilation'], function () {
 gulp.task('srcTsCopy', function () {
     return gulp.src('src/**/*.ts')
         .pipe(gulp.dest(distDir + '/src'));
+});
+
+gulp.task('jamsineCoreCopy', function () {
+    return gulp.src('node_modules/jasmine-core/lib/jasmine-core/**/*')
+        .pipe(gulp.dest(distDir + '/jasmine-core'));
+});
+
+gulp.task('jamsineCoreCopy', function () {
+    return gulp.src('node_modules/jasmine-core/lib/jasmine-core/**/*')
+        .pipe(gulp.dest(distDir + '/jasmine-core'));
+});
+
+gulp.task('testResourcesCopy', function () {
+    return gulp.src('resources/test/**/*')
+        .pipe(gulp.dest(distDir));
 });
