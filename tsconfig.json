@@ -34,12 +34,13 @@
         "!./tests/**/*"
     ],
     "files": [
-        "./spec/actionFactory.spec.ts",
-        "./spec/helpers.spec.ts",
-        "./spec/store.spec.ts",
-        "./src/actionFactory.ts",
-        "./src/helpers.ts",
-        "./src/index.ts",
-        "./src/store.ts"
-    ]
+        "spec/actionFactory.spec.ts",
+        "spec/helpers.spec.ts",
+        "spec/store.spec.ts",
+        "src/actionFactory.ts",
+        "src/helpers.ts",
+        "src/index.ts",
+        "src/store.ts"
+    ],
+    "exclude": []
 }

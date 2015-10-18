@@ -10,6 +10,14 @@ describe('actionFactory', () => {
         bootstrap(null);
     });
 
+    describe('bootstrap', () => {
+        it('reports initialization when debug has been enabled.', () => {
+            let message = null;
+            bootstrap(null, (m, p) => { message = m });
+            expect(message).toBe('Action factory has been initialized.');
+        });
+    });
+
     describe('createAction', () => {
         describe('when renderCallback has not been set', () => {
             it('does not throw if action has been only declared.', () => {
@@ -31,6 +39,30 @@ describe('actionFactory', () => {
             beforeEach(() => {
                 renderCallback = jasmine.createSpy('render');
                 bootstrap(renderCallback);
+            });
+
+            it('does not report current state when state has not been changed.', () => {
+                let messages = [];
+                let params = [];
+                bootstrap(renderCallback, (m, p?) => { messages.push(m), params && params.push(p) });
+                givenStore(aState('nestedStateValue'));
+
+                createAction(NestedCursorTestFixture, (state: INestedState) => state)();
+
+                expect(messages).not.toContain('Current state: ');
+            });
+
+            it('reports current state when debug has been enabled.', () => {
+                let messages = [];
+                let params = [];
+                let newState = { state: 'newValue' };
+                bootstrap(renderCallback, (m, p?) => { messages.push(m), params && params.push(p) });
+                givenStore(aState('nestedStateValue'));
+
+                createAction(NestedCursorTestFixture, (state: INestedState) => newState)();
+
+                expect(messages).toContain('Current state: ');
+                expect(params).toContain(newState);
             });
 
             it('does not call render callback when state has not been changed', () => {

@@ -1,9 +1,14 @@
 import { setState, getState, IState, ICursor } from './store';
 
 let render: () => void = null;
+let debug: debugCallbackType = undefined;
 
-export let bootstrap = (renderCallback: () => void) => {
+export type debugCallbackType = (message: string, params?: any) => void
+
+export let bootstrap = (renderCallback: () => void, debugCallback: debugCallbackType = (m, p) => {}) => {
     render = renderCallback;
+    debug = debugCallback;
+    debug('Action factory has been initialized.');
 };
 
 export interface IAction<T> {
@@ -14,8 +19,10 @@ export let createAction = <TState extends IState, TParams>(cursor: ICursor<TStat
     : IAction<TParams> => {
     return <IAction<TParams>>((params?: TParams): void => {
         validateRenderCallback();
-        if (changeState(cursor, handler, params))
+        if (changeState(cursor, handler, params)) {
             render();
+            debug('Rendering invoked...');
+        }
     });
 }
 
@@ -51,5 +58,6 @@ function changeState<TState extends IState, TParams>(cursor: ICursor<TState>, ha
         return false;
 
     setState(cursor, newState);
+    debug('Current state: ', newState);
     return true;
 }
