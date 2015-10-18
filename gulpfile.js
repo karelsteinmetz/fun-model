@@ -16,19 +16,20 @@ gulp.task('tsCompilation', function (cb) {
     });
 });
 
-gulp.task('testTsCompilation', function () {
-    var tsProject = ts.createProject('tsconfig.json');
-    return tsProject.src()
-        .pipe(ts(tsProject)).js
-        .pipe(gulp.dest(testDir));
-});
-
 gulp.task('runTests', ['testTsCompilation', 'jamsineCoreCopy', 'testResourcesCopy'], function () {
     return gulp.src(testDir + '/spec/**/*.spec.js')
         .pipe(jasmine({
             verbose: true,
             includeStackTrace: true
         }));
+});
+
+gulp.task('testTsCompilation', function (cb) {
+  exec('tsc --p ./ --module commonjs --target es3 --outDir ' + testDir , function (err, stdout, stderr) {
+      console.log(stdout);
+      console.log(stderr);
+      cb(err);
+  });
 });
 
 gulp.task('srcTsCopy', function () {
