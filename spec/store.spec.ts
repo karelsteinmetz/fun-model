@@ -1,5 +1,6 @@
 /// <reference path="./jasmine"/>
 import * as s from '../src/store';
+import * as d from '../src/debug';
 
 describe('store', () => {
     beforeEach(() => {
@@ -41,7 +42,7 @@ describe('store', () => {
 
                 expect(state).toBe('value');
             });
-            
+
             it('returns nested state by cursor when current value of sub state is empty string', () => {
                 givenStore({ some: { nested: { state: '' } } });
 
@@ -101,7 +102,7 @@ describe('store', () => {
 
                 expect((s.getState(rootCursorTestFixture)).some.nested.state).toBe('newValue');
             });
-            
+
             it('sets nested state by cursor when current value of sub state is empty string', () => {
                 givenStore({ some: { nested: { state: '' } } });
 
@@ -117,6 +118,15 @@ describe('store', () => {
                 s.setState({ key: 'some' }, { nested: { state: 'newValue' } });
 
                 expect(s.getState(s.rootCursor)).not.toBe(initState);
+            });
+
+            it('logs new global state when debuging has been enabled', () => {
+                let debugCallback = jasmine.createSpy('debugCallback');
+                d.bootstrap(debugCallback);
+                givenStore({ some: { nested: { state: 'value' } } });
+                s.setState({ key: 'some' },  { nested: { state: 'newValue' } });
+
+                expect(debugCallback).toHaveBeenCalledWith('Current state:', s.getState(s.rootCursor));
             });
 
             it('sets new instances of nodes which is in the path to root state', () => {

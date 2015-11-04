@@ -1,12 +1,13 @@
-import { IState } from './store';
-import { bootstrap as storeBootstrap } from './store';
-import { bootstrap as actionFactoryBootstrap, debugCallbackType } from './actionFactory';
+import * as s from './store';
+import * as af from './actionFactory';
+import * as d from './debug';
 
 export * from './store';
 export * from './actionFactory';
 export * from './helpers';
 
-export let bootstrap = (defaultState: IState, renderCallback: () => void, debugCallback: debugCallbackType = undefined, subStateSeparator: string = '.') => {
-    storeBootstrap(defaultState, subStateSeparator);
-    actionFactoryBootstrap(renderCallback, (message, params) => { debugCallback && debugCallback(`fun-model -> ${message}`, params) });
+export let bootstrap = (defaultState: s.IState, renderCallback: () => void, debugCallback: d.debugCallbackType = undefined, subStateSeparator: string = '.') => {
+    debugCallback && d.bootstrap((m, p) => debugCallback(`fun-model -> ${m}`, p));
+    s.bootstrap(defaultState, subStateSeparator);
+    af.bootstrap(renderCallback);
 };

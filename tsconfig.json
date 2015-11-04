@@ -40,7 +40,8 @@
         "src/actionFactory.ts",
         "src/helpers.ts",
         "src/index.ts",
-        "src/store.ts"
+        "src/store.ts",
+        "src/debug.ts"
     ],
     "exclude": []
 }

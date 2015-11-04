@@ -2,19 +2,23 @@
 import * as s from '../src/store';
 import { createAction, createActions, bootstrap } from '../src/actionFactory';
 import { IState, ICursor } from '../src/store';
+import * as d from '../src/debug';
 
 describe('actionFactory', () => {
+    let debugCallback: d.debugCallbackType
 
     beforeEach(() => {
         resetStore();
         bootstrap(null);
+        debugCallback = jasmine.createSpy('debugCallback');
+        d.bootstrap(debugCallback);
     });
 
     describe('bootstrap', () => {
         it('reports initialization when debug has been enabled.', () => {
-            let message = null;
-            bootstrap(null, (m, p) => { message = m });
-            expect(message).toBe('Action factory has been initialized.');
+            bootstrap(null);
+
+            expect(debugCallback).toHaveBeenCalledWith('Action factory has been initialized.', undefined);
         });
     });
 
@@ -42,27 +46,22 @@ describe('actionFactory', () => {
             });
 
             it('does not report current state when state has not been changed.', () => {
-                let messages = [];
-                let params = [];
-                bootstrap(renderCallback, (m, p?) => { messages.push(m), params && params.push(p) });
+                bootstrap(renderCallback);
                 givenStore(aState('nestedStateValue'));
 
                 createAction(NestedCursorTestFixture, (state: INestedState) => state)();
 
-                expect(messages).not.toContain('Current state: ');
+                expect(debugCallback).not.toHaveBeenCalledWith('Global state has been changed.', undefined);
             });
 
-            it('reports current state when debug has been enabled.', () => {
-                let messages = [];
-                let params = [];
+            it('reports state changed when debug has been enabled.', () => {
                 let newState = { state: 'newValue' };
-                bootstrap(renderCallback, (m, p?) => { messages.push(m), params && params.push(p) });
+                bootstrap(renderCallback);
                 givenStore(aState('nestedStateValue'));
 
                 createAction(NestedCursorTestFixture, (state: INestedState) => newState)();
 
-                expect(messages).toContain('Current state: ');
-                expect(params).toContain(newState);
+                expect(debugCallback).toHaveBeenCalledWith('Global state has been changed.', undefined);
             });
 
             it('does not call render callback when state has not been changed', () => {
