@@ -1,4 +1,5 @@
 import * as h from './helpers';
+import * as d from './debug';
 
 export interface IState {
 }
@@ -9,8 +10,8 @@ export interface ICursor<TState extends IState> {
 
 let state: IState = null;
 let stateSeparator = '.';
-
 let rootStateKey = '';
+
 export let rootCursor: ICursor<IState> = {
     key: rootStateKey
 };
@@ -59,6 +60,7 @@ export let setState = <TState extends IState>(cursor: ICursor<TState>, updatedSt
     cursor.key === rootStateKey
         ? updatedState
         : setInnerState(state, cursor.key.split(stateSeparator));
+    d.log('Current state:', state);
 };
 
 function checkSubstate(s: IState, subPath: string, cursorKey: string) {
