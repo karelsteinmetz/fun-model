@@ -127,7 +127,7 @@ describe('actionFactory', () => {
 
                 let testAction = createActions(
                     {
-                        cursor: NestedCursorTestFixture,
+                        cursor: SomeCursorTestFixture,
                         handler: (state: ISomeState): ISomeState => { return { nested: state.nested, state: 'newStateValue' } }
                     },
                     {
@@ -171,6 +171,6 @@ var NestedCursorTestFixture: ICursor<INestedState> = {
     key: 'some.nested'
 }
 
-var SomeCursorTestFixture: ICursor<INestedState> = {
-    key: 'some.nested'
+var SomeCursorTestFixture: ICursor<ISomeState> = {
+    key: 'some'
 }
