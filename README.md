@@ -8,21 +8,14 @@ I spent long time in flux like libraries last month and there are my notes for p
 * model - just Model or ViewModel
 
 ## Resources
-### Bobril
-* https://github.com/Bobris/Bobril
-
-### Flux
-* https://facebook.github.io/flux/docs/overview.html#content
-
-### Reflux
-* https://github.com/spoike/refluxjs
-
-### Redux
-* reducers + flux
-* immutability
-* pure functionality
-* https://www.youtube.com/watch?v=xsSnOQynTHs
-* https://github.com/gaearon/redux
+* [Bobril](https://github.com/Bobris/Bobril),
+* [Flux](https://facebook.github.io/flux/docs/overview.html#content),
+* [Reflux](https://github.com/spoike/refluxjs),
+* [Redux](https://github.com/gaearon/redux)
+ * reducers + flux
+ * immutability
+ * pure functionality
+ * https://www.youtube.com/watch?v=xsSnOQynTHs
 
 ## Notes
 ### Common keywords
