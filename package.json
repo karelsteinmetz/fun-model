@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/karelsteinmetz/bobflux.git"
+    "url": "https://github.com/karelsteinmetz/fun-model.git"
   },
   "keywords": [
     "flux",
