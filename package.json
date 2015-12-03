@@ -16,7 +16,8 @@
     "email": "karel.steinmetz@gmail.com"
   },
   "files": [
-    "dist"
+    "dist",
+    "typings"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
