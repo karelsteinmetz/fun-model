@@ -1,5 +1,4 @@
 {
-    "version": "1.6.2",
     "compileOnSave": false,
     "compilerOptions": {
         "target": "es5",
@@ -34,14 +33,17 @@
         "!./tests/**/*"
     ],
     "files": [
-        "spec/actionFactory.spec.ts",
-        "spec/helpers.spec.ts",
-        "spec/store.spec.ts",
-        "src/actionFactory.ts",
-        "src/helpers.ts",
-        "src/index.ts",
-        "src/store.ts",
-        "src/debug.ts"
+        "./spec/actionFactory.spec.ts",
+        "./spec/helpers.spec.ts",
+        "./spec/store.spec.ts",
+        "./src/actionFactory.ts",
+        "./src/debug.ts",
+        "./src/helpers.ts",
+        "./src/index.ts",
+        "./src/store.ts"
     ],
-    "exclude": []
+    "exclude": [],
+    "atom": {
+        "rewriteTsconfig": true
+    }
 }

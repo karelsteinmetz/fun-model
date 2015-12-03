@@ -16,20 +16,17 @@ gulp.task('tsCompilation', function (cb) {
     });
 });
 
-gulp.task('runTests', ['testTsCompilation', 'jamsineCoreCopy', 'testResourcesCopy'], function () {
-    return gulp.src(testDir + '/spec/**/*.spec.js')
-        .pipe(jasmine({
-            verbose: true,
-            includeStackTrace: true
-        }));
-});
-
-gulp.task('testTsCompilation', function (cb) {
-  exec('tsc --p ./ --module commonjs --target es3 --outDir ' + testDir , function (err, stdout, stderr) {
-      console.log(stdout);
-      console.log(stderr);
-      cb(err);
-  });
+gulp.task('runTests', ['jamsineCoreCopy', 'testResourcesCopy'], function (cb) {
+    exec('tsc --p ./ --outDir ' + buildDir, function (err, stdout, stderr) {
+        console.log(stdout);
+        console.log(stderr);
+        cb(err);
+        gulp.src(buildDir + '/spec/**/*.spec.js')
+            .pipe(jasmine({
+                verbose: true,
+                includeStackTrace: true
+            }));
+    });
 });
 
 gulp.task('jamsineCoreCopy', function () {

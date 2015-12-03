@@ -136,6 +136,94 @@ describe('actionFactory', () => {
             });
         });
     });
+
+    describe('createAsyncAction', () => {
+        beforeEach(() => {
+            jasmine.clock().install();
+        });
+
+        describe('when renderCallback has not been set', () => {
+            it('does not throw if action has been only declared.', () => {
+                let testAction = af.createAsyncAction(NestedCursorTestFixture, (state: INestedState) => state);
+                expect(testAction).not.toBeUndefined();
+            });
+
+            it('throws if key does not exist', () => {
+                expect(() => {
+                    let testAction = af.createAsyncAction(NestedCursorTestFixture, (state: INestedState) => { return { state: 'new nested state' }; });
+                    testAction();
+                    jasmine.clock().tick(1);
+                }).toThrow('Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).');
+            });
+        });
+
+        describe('when renderCallback has been set', () => {
+            let renderCallback: () => void;
+
+            beforeEach(() => {
+                renderCallback = jasmine.createSpy('render');
+                af.bootstrap(renderCallback);
+            });
+
+            it('does not report current state when state has not been changed.', () => {
+                givenStore(aState('nestedStateValue'));
+
+                let testAction = af.createAsyncAction(NestedCursorTestFixture, (state: INestedState) => state);
+                testAction();
+                jasmine.clock().tick(1);
+
+                expect(debugCallback).not.toHaveBeenCalledWith('Global state has been changed.', undefined);
+            });
+
+            it('reports state changed when debug has been enabled.', () => {
+                let newState = { state: 'newValue' };
+                givenStore(aState('nestedStateValue'));
+
+                let testAction = af.createAsyncAction(NestedCursorTestFixture, (state: INestedState) => newState);
+                testAction();
+                jasmine.clock().tick(1);
+
+                expect(debugCallback).toHaveBeenCalledWith('Global state has been changed.', undefined);
+            });
+
+            it('does not call render callback when state has not been changed', () => {
+                givenStore(aState('nestedStateValue'));
+
+                let testAction = af.createAsyncAction(NestedCursorTestFixture, (state: INestedState) => state);
+                testAction();
+                jasmine.clock().tick(1);
+
+                expect(renderCallback).not.toHaveBeenCalled();
+            });
+
+            it('calls render callback when state has been changed', () => {
+                givenStore(aState('nestedStateValue'));
+
+                let testAction = af.createAsyncAction(NestedCursorTestFixture, (state: INestedState) => { return { state: 'newValue' }; });
+                testAction();
+                jasmine.clock().tick(1);
+
+                expect(renderCallback).toHaveBeenCalled();
+            });
+
+            it('returns new state in resolve', (done) => {
+                givenStore(aState('nestedStateValue'));
+                let newState = { state: 'newValue' };
+
+                let testAction = af.createAsyncAction(NestedCursorTestFixture, (state: INestedState) => newState);
+                testAction()
+                    .then(r => {
+                        expect(r).toBe(newState);
+                        done();
+                    });
+                jasmine.clock().tick(1);
+            });
+        });
+
+        afterEach(() => {
+            jasmine.clock().uninstall();
+        });
+    });
 });
 
 function givenStore(state: IStateTestFixture) {

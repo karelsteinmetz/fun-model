@@ -1,3 +1,4 @@
+/// <reference path="../typings/tsd" />
 import * as s from './store';
 import * as d from './debug';
 
@@ -10,6 +11,10 @@ export let bootstrap = (renderCallback: () => void) => {
 
 export interface IAction<T> {
     (param?: T): void;
+}
+
+export interface IAsyncAction<T, TState> {
+    (param?: T): Promise<TState>;
 }
 
 export let createAction = <TState extends s.IState, TParams>(cursor: s.ICursor<TState>, handler: (state: TState, t?: TParams) => TState)
@@ -39,6 +44,26 @@ export let createActions = <TState extends s.IState, TParams>(...pairs: IPair<TS
                     changed = true;
             }
         changed && render();
+    });
+}
+
+export let createAsyncAction = <TState extends s.IState, TParams>(cursor: s.ICursor<TState>, handler: (state: TState, t?: TParams) => TState)
+    : IAsyncAction<TParams, TState> => {
+    return <IAsyncAction<TParams, TState>>((params?: TParams): Promise<TState> => {
+        return new Promise<TState>((f, r) => {
+            setTimeout(() => {
+                validateRenderCallback();
+                let oldState = s.getState(cursor);
+                let newState = handler(oldState, params);
+                if (oldState !== newState) {
+                    s.setState(cursor, newState);
+                    d.log('Global state has been changed.');
+                    render();
+                    d.log('Rendering invoked...');
+                }
+                f(newState);
+            }, 0);
+        });
     });
 }
 
