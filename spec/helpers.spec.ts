@@ -3,7 +3,7 @@ import { shallowCopy } from '../src/helpers';
 
 describe('helpers', () => {
     describe('shallowCopy', () => {
-        let aState;
+        let aState: IDummyState;
 
         beforeEach(() => {
             aState = {
@@ -35,5 +35,21 @@ describe('helpers', () => {
             expect(newState.subObject).toBe(aState.subObject);
             expect(newState.list).toBe(aState.list);
         });
+
+        it('sets properties in callback', () => {
+            let newState = shallowCopy(aState, s => {
+                s.id = 'newId';
+                s.subObject = { id: 'newSubId' };
+            });
+
+            expect(newState.id).toBe('newId');
+            expect(newState.subObject).toEqual({ id: 'newSubId'});
+        });
     });
 });
+
+interface IDummyState {
+    id: string
+    list: number[]
+    subObject: any
+}
