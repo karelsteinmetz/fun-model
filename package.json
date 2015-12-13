@@ -1,6 +1,6 @@
 {
   "name": "fun-model",
-  "version": "0.1.4",
+  "version": "1.0.0",
   "description": "fun-model is pure functional implementation of FLUX architecture.",
   "main": "dist/index.js",
   "repository": {
@@ -24,11 +24,11 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "gulp": "^3.9.0",
-    "gulp-jasmine": "^2.0.1",
-    "gulp-typescript": "^2.8.2",
-    "jasmine-core": "^2.3.4",
-    "systemjs": "^0.19.4"
+    "gulp": "3.9.0",
+    "gulp-jasmine": "2.2.1",
+    "gulp-typescript": "2.10.0",
+    "jasmine-core": "2.4.1",
+    "systemjs": "0.19.6"
   },
   "license": "MIT"
 }
