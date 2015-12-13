@@ -1,0 +1,9 @@
+.*
+*.bat
+resources
+spec
+tests
+tsconfig.json
+gulpfile.js
+build.bat
+tests.bat

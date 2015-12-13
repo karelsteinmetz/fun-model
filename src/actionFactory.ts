@@ -1,4 +1,3 @@
-/// <reference path="../typings/tsd" />
 import * as s from './store';
 import * as d from './debug';
 

@@ -1,13 +1,13 @@
 {
     "compileOnSave": false,
     "compilerOptions": {
-        "target": "es5",
+        "target": "es6",
         "module": "commonjs",
-        "outDir": "build",
-        "sourceMap": false,
-        "removeComments": true,
-        "listFiles": true,
-        "declaration": true
+        "declaration": true,
+        "noImplicitAny": false,
+        "removeComments": false,
+        "moduleResolution": "node",
+        "noLib": false
     },
     "formatCodeOptions": {
         "indentSize": 4,
@@ -25,21 +25,18 @@
     },
     "filesGlob": [
         "./**/*.ts",
-        "!./tmp/**/*.ts",
-        "!./typed/**/*",
-        "!./node_modules/**/*",
         "!./**/*.d.ts",
-        "!./dist/**/*",
+        "!./node_modules/**/*",
         "!./tests/**/*"
     ],
     "files": [
+        "./index.ts",
         "./spec/actionFactory.spec.ts",
         "./spec/helpers.spec.ts",
         "./spec/store.spec.ts",
         "./src/actionFactory.ts",
         "./src/debug.ts",
         "./src/helpers.ts",
-        "./src/index.ts",
         "./src/store.ts"
     ],
     "exclude": [],

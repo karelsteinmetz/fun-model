@@ -3,13 +3,12 @@ var ts = require('gulp-typescript');
 var jasmine = require('gulp-jasmine');
 var exec = require('child_process').exec
 
-var buildDir = 'build'
 var testDir = 'tests'
 
-gulp.task('default', ['runTests', 'tsCompilation']);
+gulp.task('default', ['tsCompilation']);
 
 gulp.task('tsCompilation', function (cb) {
-    exec('tsc --p ./ --outDir ' + buildDir, function (err, stdout, stderr) {
+    exec('tsc --p ./', function (err, stdout, stderr) {
         console.log(stdout);
         console.log(stderr);
         cb(err);
@@ -17,11 +16,8 @@ gulp.task('tsCompilation', function (cb) {
 });
 
 gulp.task('runTests', ['jamsineCoreCopy', 'testResourcesCopy'], function (cb) {
-    exec('tsc --p ./ --outDir ' + buildDir, function (err, stdout, stderr) {
-        console.log(stdout);
-        console.log(stderr);
-        cb(err);
-        gulp.src(buildDir + '/spec/**/*.spec.js')
+    exec('tsc --p ./ --target es5 --outDir ' + testDir, function (err, stdout, stderr) {
+        gulp.src(testDir + '/spec/**/*.spec.js')
             .pipe(jasmine({
                 verbose: true,
                 includeStackTrace: true
@@ -31,28 +27,15 @@ gulp.task('runTests', ['jamsineCoreCopy', 'testResourcesCopy'], function (cb) {
 
 gulp.task('jamsineCoreCopy', function () {
     return gulp.src('node_modules/jasmine-core/lib/jasmine-core/**/*')
-        .pipe(gulp.dest(buildDir + '/jasmine-core'));
+        .pipe(gulp.dest(testDir + '/jasmine-core'));
 });
 
 gulp.task('testResourcesCopy', ['systemjsCopy'], function () {
     return gulp.src('resources/test/**/*')
-        .pipe(gulp.dest(buildDir));
+        .pipe(gulp.dest(testDir));
 });
 
 gulp.task('systemjsCopy', function () {
     return gulp.src('node_modules/systemjs/dist/system.js')
-        .pipe(gulp.dest(buildDir));
-});
-
-// Dist
-var distDir = 'dist'
-
-gulp.task('dist', ['srcTsCopy'], function () {
-    return gulp.src(buildDir + '/src/**/*')
-        .pipe(gulp.dest(distDir));
-});
-
-gulp.task('srcTsCopy', function () {
-    return gulp.src('src/**/*.ts')
-        .pipe(gulp.dest(distDir));
+        .pipe(gulp.dest(testDir));
 });

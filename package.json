@@ -2,7 +2,11 @@
   "name": "fun-model",
   "version": "1.0.0",
   "description": "fun-model is pure functional implementation of FLUX architecture.",
-  "main": "dist/index.js",
+  "main": "./index.js",
+  "typescript": {
+    "main": "./index.ts",
+    "definition": "./index.d.ts"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/karelsteinmetz/fun-model.git"
@@ -15,10 +19,6 @@
     "name": "Karel Steinmetz",
     "email": "karel.steinmetz@gmail.com"
   },
-  "files": [
-    "dist",
-    "typings"
-  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
