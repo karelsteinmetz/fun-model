@@ -1,5 +1,5 @@
 /// <reference path="./jasmine"/>
-import { shallowCopy } from '../src/helpers';
+import * as h from '../src/helpers';
 
 describe('helpers', () => {
     describe('shallowCopy', () => {
@@ -16,7 +16,7 @@ describe('helpers', () => {
         });
 
         it('copies all values', () => {
-            let newState = shallowCopy(aState);
+            let newState = h.shallowCopy(aState);
 
             expect(newState.id).toBe(aState.id);
             expect(newState.subObject.id).toBe(aState.subObject.id);
@@ -24,26 +24,44 @@ describe('helpers', () => {
         });
 
         it('returns new object', () => {
-            let newState = shallowCopy(aState);
+            let newState = h.shallowCopy(aState);
 
             expect(newState).not.toBe(aState);
         });
 
         it('returns original sub objects', () => {
-            let newState = shallowCopy(aState);
+            let newState = h.shallowCopy(aState);
 
             expect(newState.subObject).toBe(aState.subObject);
             expect(newState.list).toBe(aState.list);
         });
 
-        it('sets properties in callback', () => {
-            let newState = shallowCopy(aState, s => {
+        it('sets properties in callback without return', () => {
+            let newState = h.shallowCopy(aState, s => {
                 s.id = 'newId';
                 s.subObject = { id: 'newSubId' };
             });
 
             expect(newState.id).toBe('newId');
-            expect(newState.subObject).toEqual({ id: 'newSubId'});
+            expect(newState.subObject).toEqual({ id: 'newSubId' });
+        });
+
+        it('sets properties in nested shallowCopy', () => {
+            let newState = h.shallowCopy(aState, s => h.shallowCopy(s, a => {
+                a.id = 'newId';
+                a.subObject = { id: 'newSubId' };
+                return a;
+            }));
+
+            expect(newState.id).toBe('newId');
+            expect(newState.subObject).toEqual({ id: 'newSubId' });
+        });
+        
+        it('sets properties in inline style', () => {
+            let newState = h.shallowCopy(aState, s => { s.id = 'newId' });
+
+            expect(newState.id).toBe('newId');
+            expect(newState.subObject).toEqual({ id: 'newSubId' });
         });
     });
 });
