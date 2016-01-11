@@ -16,15 +16,19 @@ export interface IAsyncAction<T, TState> {
     (param?: T): Promise<TState>;
 }
 
-export let createAction = <TState extends s.IState, TParams>(cursor: s.ICursor<TState>, handler: (state: TState, t?: TParams) => TState)
+export let createAction = <TState extends s.IState, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, handler: (state: TState, t?: TParams) => TState)
     : IAction<TParams> => {
     return <IAction<TParams>>((params?: TParams): void => {
         validateRenderCallback();
-        if (changeState(cursor, handler, params)) {
+        if (changeState(unifyCursor(cursor, params), handler, params)) {
             render();
             d.log('Rendering invoked...');
         }
     });
+}
+
+function unifyCursor<TState extends s.IState, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, params: TParams): s.ICursor<TState> {
+    return (<s.ICursorFactory<TState, TParams>>cursor).create instanceof Function ? (<s.ICursorFactory<TState, TParams>>cursor).create(params) : <s.ICursor<TState>>cursor;
 }
 
 export interface IPair<TState extends s.IState, TParam> {
@@ -46,16 +50,17 @@ export let createActions = <TState extends s.IState, TParams>(...pairs: IPair<TS
     });
 }
 
-export let createAsyncAction = <TState extends s.IState, TParams>(cursor: s.ICursor<TState>, handler: (state: TState, t?: TParams) => TState)
+export let createAsyncAction = <TState extends s.IState, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, handler: (state: TState, t?: TParams) => TState)
     : IAsyncAction<TParams, TState> => {
     return <IAsyncAction<TParams, TState>>((params?: TParams): Promise<TState> => {
         return new Promise<TState>((f, r) => {
             setTimeout(() => {
                 validateRenderCallback();
-                let oldState = s.getState(cursor);
+                let c = unifyCursor(cursor, params);
+                let oldState = s.getState(c);
                 let newState = handler(oldState, params);
                 if (oldState !== newState) {
-                    s.setState(cursor, newState);
+                    s.setState(c, newState);
                     d.log('Global state has been changed.');
                     render();
                     d.log('Rendering invoked...');

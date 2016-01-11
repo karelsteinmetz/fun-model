@@ -1,5 +1,6 @@
 /// <reference path="./jasmine"/>
 import * as s from '../src/store';
+import * as tds from './todosState';
 import * as af from '../src/actionFactory';
 import * as d from '../src/debug';
 
@@ -19,6 +20,46 @@ describe('actionFactory', () => {
 
             expect(debugCallback).toHaveBeenCalledWith('Action factory has been initialized.', undefined);
         });
+    });
+
+    describe('array by cursor factory', () => {
+        let renderCallback: () => void;
+
+        beforeEach(() => {
+            renderCallback = jasmine.createSpy('render');
+            af.bootstrap(renderCallback);
+        });
+
+        it('changes state in array', () => {
+            givenTodosStore({
+                todos: [{ done: false, name: 'First todo' }, { done: false, name: 'Second todo' }]
+            });
+
+            let testAction = af.createAction<tds.ITodo, tds.ITodoParams>({ create: (params) => { return { key: `todos.${params.index}` } } }, (state, params) => { return params.todo });
+            testAction({ index: 1, todo: { done: false, name: 'New second todo' } });
+
+            expect(getTodosState().todos[1].done).toBeFalsy();
+            expect(getTodosState().todos[1].name).toBe('New second todo');
+        });
+
+        it('changes nested state on existing index', () => {
+            givenTodosStore({
+                todos: [{ done: false, name: 'First todo' }, { done: false, name: 'Second todo' }]
+            });
+
+            let testAction = af.createAction<boolean, number>({ create: (index) => { return { key: `todos.${index}.done` } } }, (state) => { return true; });
+            testAction(1);
+
+            expect(getTodosState().todos[1].done).toBeTruthy();
+        });
+
+        function givenTodosStore(state: tds.ITodosState) {
+            s.setState(s.rootCursor, state);
+        }
+
+        function getTodosState(): tds.ITodosState {
+            return s.getState<tds.ITodosState>(s.rootCursor);
+        }
     });
 
     describe('createAction', () => {

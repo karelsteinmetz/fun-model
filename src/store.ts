@@ -8,6 +8,10 @@ export interface ICursor<TState extends IState> {
     key: string;
 }
 
+export interface ICursorFactory<TState, TParms> {
+    create(data: TParms): ICursor<TState>;
+}
+
 let state: IState = null;
 let stateSeparator = '.';
 let rootStateKey = '';
@@ -25,11 +29,12 @@ export let getState = <TState extends IState>(cursor: ICursor<TState>): TState =
     let getInnerState = (innerState: IState, path: string[]): IState => {
         if (path.length === 0)
             return innerState;
-
         let subPath = path.shift();
         checkSubstate(innerState, subPath, cursor.key);
-
-        return getInnerState(innerState[subPath], path);
+        let prop = innerState[subPath];
+        return Array.isArray(prop)
+            ? getInnerState(prop[Number(path.shift())], path)
+            : getInnerState(prop, path);
     };
     checkDefaultStateAndCursor(cursor);
     return <TState>(cursor.key === rootStateKey
@@ -41,12 +46,19 @@ export let setState = <TState extends IState>(cursor: ICursor<TState>, updatedSt
     let setInnerState = <TInnerState extends IState>(innerState: TInnerState, path: string[]): TInnerState => {
         if (path.length === 0)
             return <any>updatedState;
-
         let subPath = path.shift();
         checkSubstate(innerState, subPath, cursor.key);
+        let prop = innerState[subPath];
+        let newSubState = null;
+        if (Array.isArray(prop)) {
+            let index = Number(path.shift());
+            prop[index] = setInnerState(prop[index], path);
+            newSubState = [...prop];
+        }
+        else
+            newSubState = setInnerState(prop, path);
 
-        let newSubState = setInnerState(innerState[subPath], path);
-        if (newSubState === innerState[subPath])
+        if (newSubState === prop)
             return innerState;
 
         let newState = h.shallowCopy(innerState);
@@ -57,9 +69,9 @@ export let setState = <TState extends IState>(cursor: ICursor<TState>, updatedSt
     checkDefaultStateAndCursor(cursor);
 
     state =
-    cursor.key === rootStateKey
-        ? updatedState
-        : setInnerState(state, cursor.key.split(stateSeparator));
+        cursor.key === rootStateKey
+            ? updatedState
+            : setInnerState(state, cursor.key.split(stateSeparator));
     d.log('Current state:', state);
 };
 

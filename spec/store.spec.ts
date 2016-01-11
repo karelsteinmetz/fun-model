@@ -1,5 +1,6 @@
 /// <reference path="./jasmine"/>
 import * as s from '../src/store';
+import * as tds from './todosState';
 import * as d from '../src/debug';
 
 describe('store', () => {
@@ -60,6 +61,24 @@ describe('store', () => {
                 expect(() => s.getState<s.IState>({ key: null }))
                     .toThrow('Cursor key cannot be null.');
             });
+        });
+
+        describe('with booting and dynamic/array cursor', () => {
+            beforeEach(() => {
+                s.bootstrap(tds.default());
+            });
+
+            it('returns nested state in the array on specified index', () => {
+                givenTodoStore({ todos: [{ done: false, name: 'First Todo' }, { done: false, name: 'Second Todo' }] });
+
+                let state = s.getState<tds.ITodosState>({ key: 'todos.1.name' });
+
+                expect(state).toBe('Second Todo');
+            });
+
+            function givenTodoStore(state: tds.ITodosState) {
+                s.setState(s.rootCursor, state);
+            }
         });
     });
 
@@ -124,7 +143,7 @@ describe('store', () => {
                 let debugCallback = jasmine.createSpy('debugCallback');
                 d.bootstrap(debugCallback);
                 givenStore({ some: { nested: { state: 'value' } } });
-                s.setState({ key: 'some' },  { nested: { state: 'newValue' } });
+                s.setState({ key: 'some' }, { nested: { state: 'newValue' } });
 
                 expect(debugCallback).toHaveBeenCalledWith('Current state:', s.getState(s.rootCursor));
             });
@@ -140,6 +159,41 @@ describe('store', () => {
                 expect(newState.some).not.toBe(initState.some);
                 expect(newState.some.nested).not.toBe(initState.some.nested);
             });
+        });
+        
+        describe('with booting and dynamic/array cursor', () => {
+            beforeEach(() => {
+                s.bootstrap(tds.default());
+            });
+
+            it('sets nested state into array on specified index', () => {
+                givenTodoStore({ todos: [{ done: false, name: 'First Todo' }, { done: false, name: 'Second Todo' }] });
+
+                s.setState({ key: 'todos.1.name' }, 'New Todo Name');
+
+                expect(s.getState({ key: 'todos.1.name' })).toBe('New Todo Name');
+            });
+            
+            it('sets new state into array on specified index', () => {
+                givenTodoStore({ todos: [{ done: false, name: 'First Todo' }] });
+
+                s.setState({ key: 'todos.0' }, { done: false, name: 'Second Todo' });
+
+                expect(s.getState({ key: 'todos.0'})).toEqual({ done: false, name: 'Second Todo' });
+            });
+            
+            it('sets new instance for array', () => {
+                let storedTodos = [{ done: false, name: 'First Todo' }, { done: false, name: 'Second Todo' }];
+                givenTodoStore({ todos: storedTodos });
+
+                s.setState({ key: 'todos.1.name' }, 'New Todo Name');
+
+                expect(s.getState({ key: 'todos' })).not.toBe(storedTodos);
+            });
+
+            function givenTodoStore(state: tds.ITodosState) {
+                s.setState(s.rootCursor, state);
+            }
         });
     });
 

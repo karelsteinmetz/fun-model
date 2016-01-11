@@ -34,6 +34,7 @@
         "./spec/actionFactory.spec.ts",
         "./spec/helpers.spec.ts",
         "./spec/store.spec.ts",
+        "./spec/todosState.ts",
         "./src/actionFactory.ts",
         "./src/debug.ts",
         "./src/helpers.ts",
