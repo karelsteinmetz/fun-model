@@ -56,9 +56,12 @@ describe('helpers', () => {
             expect(newState.id).toBe('newId');
             expect(newState.subObject).toEqual({ id: 'newSubId' });
         });
-        
+
         it('sets properties in inline style', () => {
-            let newState = h.shallowCopy(aState, s => { s.id = 'newId' });
+            let newState = h.shallowCopy(aState, s => {
+                s.id = 'newId';
+                s.subObject = { id: 'newSubId' };
+            });
 
             expect(newState.id).toBe('newId');
             expect(newState.subObject).toEqual({ id: 'newSubId' });
