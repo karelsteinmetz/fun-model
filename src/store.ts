@@ -32,7 +32,7 @@ export let getState = <TState extends IState>(cursor: ICursor<TState>): TState =
         let subPath = path.shift();
         checkSubstate(innerState, subPath, cursor.key);
         let prop = innerState[subPath];
-        return Array.isArray(prop)
+        return Array.isArray(prop) && path.length > 0
             ? getInnerState(prop[Number(path.shift())], path)
             : getInnerState(prop, path);
     };
@@ -50,7 +50,7 @@ export let setState = <TState extends IState>(cursor: ICursor<TState>, updatedSt
         checkSubstate(innerState, subPath, cursor.key);
         let prop = innerState[subPath];
         let newSubState = null;
-        if (Array.isArray(prop)) {
+        if (Array.isArray(prop) && path.length > 0) {
             let index = Number(path.shift());
             prop[index] = setInnerState(prop[index], path);
             newSubState = [...prop];

@@ -76,6 +76,14 @@ describe('store', () => {
                 expect(state).toBe('Second Todo');
             });
 
+            it('returns full array when is as last key', () => {
+                givenTodoStore({ todos: [{ done: false, name: 'First Todo' }] });
+
+                let state = s.getState<tds.ITodosState>(tds.todosCursor);
+
+                expect(state[0].done).toBeFalsy();
+            });
+
             function givenTodoStore(state: tds.ITodosState) {
                 s.setState(s.rootCursor, state);
             }
@@ -160,7 +168,7 @@ describe('store', () => {
                 expect(newState.some.nested).not.toBe(initState.some.nested);
             });
         });
-        
+
         describe('with booting and dynamic/array cursor', () => {
             beforeEach(() => {
                 s.bootstrap(tds.default());
@@ -173,22 +181,32 @@ describe('store', () => {
 
                 expect(s.getState({ key: 'todos.1.name' })).toBe('New Todo Name');
             });
-            
+
             it('sets new state into array on specified index', () => {
                 givenTodoStore({ todos: [{ done: false, name: 'First Todo' }] });
 
                 s.setState({ key: 'todos.0' }, { done: false, name: 'Second Todo' });
 
-                expect(s.getState({ key: 'todos.0'})).toEqual({ done: false, name: 'Second Todo' });
+                expect(s.getState({ key: 'todos.0' })).toEqual({ done: false, name: 'Second Todo' });
             });
-            
-            it('sets new instance for array', () => {
+
+            it('sets new instance of array when nested item has been changed', () => {
                 let storedTodos = [{ done: false, name: 'First Todo' }, { done: false, name: 'Second Todo' }];
                 givenTodoStore({ todos: storedTodos });
 
                 s.setState({ key: 'todos.1.name' }, 'New Todo Name');
 
-                expect(s.getState({ key: 'todos' })).not.toBe(storedTodos);
+                expect(s.getState(tds.todosCursor)).not.toBe(storedTodos);
+            });
+
+            it('sets full array', () => {
+                givenTodoStore({ todos: [{ done: false, name: 'First Todo' }] });
+
+                s.setState(tds.todosCursor, [{ done: false, name: 'Second Todo' }, { done: false, name: 'Third Todo' }]);
+
+                expect(s.getState(tds.todosCursor).length).toBe(2);
+                expect(s.getState(tds.todosCursor)[0].name).toBe('Second Todo');
+                expect(s.getState(tds.todosCursor)[1].name).toBe('Third Todo');
             });
 
             function givenTodoStore(state: tds.ITodosState) {

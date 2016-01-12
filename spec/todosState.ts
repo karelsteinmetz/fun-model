@@ -19,3 +19,7 @@ export interface ITodoParams {
     todo: ITodo
     index: number
 }
+
+export const todosCursor: s.ICursor<ITodo[]> = {
+    key: 'todos'
+}
