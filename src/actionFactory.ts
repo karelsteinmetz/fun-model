@@ -20,7 +20,7 @@ export let createAction = <TState extends s.IState, TParams>(cursor: s.ICursor<T
     : IAction<TParams> => {
     return <IAction<TParams>>((params?: TParams): void => {
         validateRenderCallback();
-        if (changeState(unifyCursor(cursor, params), handler, params)) {
+        if (changeState(unifyCursor<TState, TParams>(cursor, params), handler, params)) {
             render();
             d.log('Rendering invoked...');
         }
@@ -56,7 +56,7 @@ export let createAsyncAction = <TState extends s.IState, TParams>(cursor: s.ICur
         return new Promise<TState>((f, r) => {
             setTimeout(() => {
                 validateRenderCallback();
-                let c = unifyCursor(cursor, params);
+                let c = unifyCursor<TState, TParams>(cursor, params);
                 let oldState = s.getState(c);
                 let newState = handler(oldState, params);
                 if (oldState !== newState) {
