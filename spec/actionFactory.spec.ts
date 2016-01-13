@@ -35,11 +35,18 @@ describe('actionFactory', () => {
                 todos: [{ done: false, name: 'First todo' }, { done: false, name: 'Second todo' }]
             });
 
-            let testAction = af.createAction<tds.ITodo, tds.ITodoParams>({ create: (params) => { return { key: `todos.${params.index}` } } }, (state, params) => { return params.todo });
+            let testAction = af.createAction<tds.ITodo, tds.ITodoParams>(
+                {
+                    create: (params) => {
+                        return { key: `todos.${params.index}` };
+                    }
+                },
+                (state, params) => { return params.todo }
+            );
             testAction({ index: 1, todo: { done: false, name: 'New second todo' } });
 
-            expect(getTodosState().todos[1].done).toBeFalsy();
-            expect(getTodosState().todos[1].name).toBe('New second todo');
+            expect(getTodos()[1].done).toBeFalsy();
+            expect(getTodos()[1].name).toBe('New second todo');
         });
 
         it('changes nested state on existing index', () => {
@@ -50,15 +57,15 @@ describe('actionFactory', () => {
             let testAction = af.createAction<boolean, number>({ create: (index) => { return { key: `todos.${index}.done` } } }, (state) => { return true; });
             testAction(1);
 
-            expect(getTodosState().todos[1].done).toBeTruthy();
+            expect(getTodos()[1].done).toBeTruthy();
         });
 
         function givenTodosStore(state: tds.ITodosState) {
             s.setState(s.rootCursor, state);
         }
 
-        function getTodosState(): tds.ITodosState {
-            return s.getState<tds.ITodosState>(s.rootCursor);
+        function getTodos(): tds.ITodo[] {
+            return s.getState(tds.todosCursor);
         }
     });
 
