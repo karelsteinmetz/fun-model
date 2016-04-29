@@ -9,3 +9,5 @@ build
 /spec/**/*.js
 /src/**/*.d.ts
 /src/**/*.js
+/examples/react-fly-tickets/**/*.js
+/examples/react-fly-tickets/**/*.js.map

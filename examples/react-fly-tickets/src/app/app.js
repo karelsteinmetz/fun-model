@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import AppContainer from './appContainer'; // Our custom react component
+import flux from './flux';
 
 //Needed for onTouchTap
 //Can go away when react 1.0 release
