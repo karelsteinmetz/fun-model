@@ -1,6 +1,9 @@
 import * as React from 'react';
 import * as mu from 'material-ui';
 import colors from 'material-ui/lib/styles/colors';
+import FromToComponent from './search/fromToComponent';
+import * as f from './flux';
+import * as c from './states.cursors';
 
 const styles = {
   container: {
@@ -29,21 +32,6 @@ const dataSource1 = [
   },
 ];
 
-const DestinationSelection = () => (
-  <div>
-    <mu.AutoComplete
-      hintText="Destination:"
-      dataSource={this.state.fromDataSource}
-      onUpdateInput={this.handleUpdateInputFrom}
-      />
-    <mu.AutoComplete
-      hintText="To:"
-      dataSource={this.state.toDataSource}
-      onUpdateInput={this.handleUpdateInputTo}
-      />
-  </div>
-);
-
 const DateSelection = () => (
   <div>
     <mu.DatePicker hintText="Departure:" mode="landscape" />
@@ -59,46 +47,12 @@ const AppBar = () => (
     />
 );
 
-interface IProps {
-  from?: string;
-  froms?: string[];
-  to?: string;
-  tos?: string[];
-}
 
-const actions = {
-  handleUpdateInputFrom(t) {
-    console.log(t)
-  },
-  handleUpdateInputTo(t) {
-    console.log(t)
-  },
-  handleTouchTapFind() {
-    console.log('Searching...');
-  }
-}
 
-class FlySearch extends React.Component<IProps, {}> {
+class FlySearch extends React.Component<{}, {}> {
   render() {
-    const DestinationSelection = () => (
-      <div>
-        <mu.AutoComplete
-          hintText="Destination:"
-          dataSource={this.props.froms}
-          searchText={this.props.from}
-          onUpdateInput={actions.handleUpdateInputFrom}
-          />
-        <mu.AutoComplete
-          hintText="To:"
-          dataSource={this.props.tos}
-          searchText={this.props.to}
-          onUpdateInput={actions.handleUpdateInputTo}
-          />
-      </div>
-    );
-
     return <div style={styles.container}>
-      <DestinationSelection />
+      <FromToComponent />
       <DateSelection />
       <mu.RaisedButton
         label="Find"

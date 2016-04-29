@@ -8,12 +8,9 @@ const muiTheme = getMuiTheme({
     },
 });
 
-const froms = ["f1", "f2"];
-const tos = ["t1", "t2", "t3"];
-
 class AppContainer extends React.Component<{}, {}> {
     render() {
-        return <Search froms={froms} tos={tos} />;
+        return <Search />;
     }
 }
 

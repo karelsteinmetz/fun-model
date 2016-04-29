@@ -22,12 +22,12 @@ export interface ISearchState extends f.IState {
 
 export function createDefaultSearchState() {
     return {
-        from: null,
-        froms: [],
-        to: null,
-        tos: [],
-        departureDate: null,
-        returnDate: null,
+        from: '',
+        froms: ["f1", "f2"],
+        to: '',
+        tos: ["t1", "t2", "t3"],
+        departureDate: '',
+        returnDate: '',
         oneWay: false
     }
 }
