@@ -22,7 +22,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "dependencies": {},
+  "dependencies": {
+    "ts-loader": "^0.8.2"
+  },
   "devDependencies": {
     "gulp": "3.9.0",
     "gulp-jasmine": "2.2.1",
