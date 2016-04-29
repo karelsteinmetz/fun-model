@@ -1,7 +1,6 @@
 .*
 *.bat
 resources
-examples
 spec
 tests
 tsconfig.json

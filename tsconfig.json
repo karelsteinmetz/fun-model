@@ -24,6 +24,7 @@
     },
     "filesGlob": [
         "./**/*.ts",
+        "!./examples/**/*",
         "!./**/*.d.ts",
         "!./node_modules/**/*",
         "!./tests/**/*"
