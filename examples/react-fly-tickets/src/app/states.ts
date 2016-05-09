@@ -26,8 +26,8 @@ export function createDefaultSearchState() {
         froms: ["f1", "f2"],
         to: '',
         tos: ["t1", "t2", "t3"],
-        departureDate: '',
-        returnDate: '',
+        departureDate: new Date(),
+        returnDate: new Date(),
         oneWay: false
     }
 }
