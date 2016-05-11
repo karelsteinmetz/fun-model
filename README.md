@@ -1,11 +1,11 @@
 # FUN-Model
 
-## About
-I spent long time in flux like libraries last month and there are my notes for presentation purposes. I hope that it would be helpful for you in your decisions about flux. Why FUN?
-* f - functional
-* u - unidirectional
-* n - whatever
-* model - just Model or ViewModel
+* is pure functional implementation of FLUX architecture
+* Why FUN?
+ * f - functional
+ * u - unidirectional
+ * n - whatever
+ * model - just Model or ViewModel
 
 ## Resources
 * [Bobril](https://github.com/Bobris/Bobril),
@@ -16,6 +16,9 @@ I spent long time in flux like libraries last month and there are my notes for p
  * immutability
  * pure functionality
  * https://www.youtube.com/watch?v=xsSnOQynTHs
+
+## Wiki
+* [Bobflux](https://github.com/karelsteinmetz/bobflux)
 
 ## Notes
 ### Common keywords
