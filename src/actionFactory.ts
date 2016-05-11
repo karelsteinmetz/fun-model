@@ -20,7 +20,7 @@ export let createAction = <TState extends s.IState, TParams>(cursor: s.ICursor<T
     : IAction<TParams> => {
     return <IAction<TParams>>((params?: TParams): void => {
         validateRenderCallback();
-        if (changeState(unifyCursor<TState, TParams>(cursor, params), handler, params)) {
+        if (changeQueuedState(unifyCursor<TState, TParams>(cursor, params), handler, params)) {
             render();
             d.log('Rendering invoked...');
         }
@@ -43,7 +43,7 @@ export let createActions = <TState extends s.IState, TParams>(...pairs: IPair<TS
         for (var i in pairs)
             if (pairs.hasOwnProperty(i)) {
                 let pair = pairs[i];
-                if (changeState(pair.cursor, pair.handler, params))
+                if (changeQueuedState(pair.cursor, pair.handler, params))
                     changed = true;
             }
         changed && render();
@@ -57,15 +57,11 @@ export let createAsyncAction = <TState extends s.IState, TParams>(cursor: s.ICur
             setTimeout(() => {
                 validateRenderCallback();
                 let c = unifyCursor<TState, TParams>(cursor, params);
-                let oldState = s.getState(c);
-                let newState = handler(oldState, params);
-                if (oldState !== newState) {
-                    s.setState(c, newState);
-                    d.log('Global state has been changed.');
+                if (changeQueuedState(c, handler, params)) {
                     render();
                     d.log('Rendering invoked...');
                 }
-                f(newState);
+                f(s.getState(c));
             }, 0);
         });
     });
@@ -76,6 +72,30 @@ function validateRenderCallback() {
         throw 'Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).';
 }
 
+interface IQueuedHandling<TState extends s.IState, TParams> {
+    cursor: s.ICursor<TState>;
+    handler: (state: TState, t?: TParams) => TState;
+    params: TParams;
+}
+
+let isStateLocked = false;
+let queueOfHandlers: IQueuedHandling<s.IState, Object>[] = [];
+function changeQueuedState<TState extends s.IState, TParams>(cursor: s.ICursor<TState>, handler: (state: TState, t?: TParams) => TState, params: TParams)
+    : boolean {
+    if (isStateLocked) {
+        queueOfHandlers = [{ cursor, handler, params }, ...queueOfHandlers];
+        return;
+    }
+    isStateLocked = true;
+    let isStateChanged = changeState(cursor, handler, params);
+    let n;
+    while (n = queueOfHandlers.pop())
+        isStateChanged = changeState(n.cursor, n.handler, n.params) || isStateChanged;
+    isStateLocked = false;
+    isStateChanged && d.log('Global state has been changed.');
+    return isStateChanged;
+}
+
 function changeState<TState extends s.IState, TParams>(cursor: s.ICursor<TState>, handler: (state: TState, t?: TParams) => TState, params: TParams)
     : boolean {
     let oldState = s.getState(cursor);
@@ -83,6 +103,5 @@ function changeState<TState extends s.IState, TParams>(cursor: s.ICursor<TState>
     if (oldState === newState)
         return false;
     s.setState(cursor, newState);
-    d.log('Global state has been changed.');
     return true;
 }

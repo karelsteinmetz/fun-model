@@ -24,14 +24,17 @@
     },
     "filesGlob": [
         "./**/*.ts",
+        "./spec/jasmine.d.ts",
         "!./examples/**/*",
-        "!./**/*.d.ts",
+        "!.src/**/*.d.ts",
+        "!.spec/**/*.d.ts",
         "!./node_modules/**/*",
         "!./tests/**/*"
     ],
     "files": [
         "./index.ts",
         "./spec/actionFactory.spec.ts",
+        "./spec/jasmine.d.ts",
         "./spec/helpers.spec.ts",
         "./spec/store.spec.ts",
         "./spec/todosState.ts",

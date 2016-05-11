@@ -1,4 +1,3 @@
-/// <reference path="./jasmine"/>
 import * as s from '../src/store';
 import * as tds from './todosState';
 import * as af from '../src/actionFactory';
@@ -125,6 +124,27 @@ describe('actionFactory', () => {
                 testAction();
 
                 expect(renderCallback).toHaveBeenCalled();
+            });
+
+            it('calls nested actions', () => {
+                givenStore(aState('value'));
+
+                const nestedAction2 = af.createAction(NestedCursorTestFixture, (state: INestedState) => {
+                    return { state: `${state.state} -> newValueFromNestedAction2` };
+                });
+
+                const nestedAction = af.createAction(NestedCursorTestFixture, (state: INestedState) => {
+                    nestedAction2();
+                    return { state: `${state.state} -> newValueFromNestedAction` };
+                });
+
+                af.createAction(NestedCursorTestFixture, (state: INestedState) => {
+                    nestedAction();
+                    return { state: 'newValue' };
+                })();
+
+                expect(s.getState(NestedCursorTestFixture).state)
+                    .toBe('newValue -> newValueFromNestedAction -> newValueFromNestedAction2');
             });
         });
     });
