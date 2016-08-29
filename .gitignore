@@ -11,3 +11,4 @@ build
 /src/**/*.js
 /examples/react-fly-tickets/**/*.js
 /examples/react-fly-tickets/**/*.js.map
+/typings/**/*

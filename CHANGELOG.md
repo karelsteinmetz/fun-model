@@ -1,6 +1,14 @@
 CHANGELOG
 ===
 
+1.2.0
+--
+
+New Features
+-
+
+Switched js compilation from es6 to commonjs es5.
+
 1.1.0
 --
 
