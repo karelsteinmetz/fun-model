@@ -3,12 +3,8 @@ node_modules
 tests
 build
 /.vscode
-/index.js
-/index.d.ts
 /spec/**/*.d.ts
 /spec/**/*.js
-/src/**/*.d.ts
-/src/**/*.js
 /examples/react-fly-tickets/**/*.js
 /examples/react-fly-tickets/**/*.js.map
 /typings/**/*
