@@ -1,6 +1,14 @@
 CHANGELOG
 ===
 
+1.3.0
+--
+
+New Features
+-
+
+Added "types": "index.d.ts" into package.json. Supported by TS 2.0.
+
 1.2.0
 --
 
