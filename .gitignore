@@ -1,3 +1,6 @@
 node_modules
 /.vscode
 /typings/**/*
+/**/*.d.ts
+/**/*.js
+/*.tgz
