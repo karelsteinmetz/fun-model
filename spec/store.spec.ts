@@ -1,4 +1,3 @@
-/// <reference path="./jasmine"/>
 import * as s from '../src/store';
 import * as tds from './todosState';
 import * as d from '../src/debug';

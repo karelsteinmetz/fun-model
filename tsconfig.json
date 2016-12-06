@@ -1,32 +1,27 @@
 {
     "compileOnSave": false,
     "compilerOptions": {
-        "declaration": true,
-        "module": "commonjs",
         "target": "es5",
+        "declaration": true,
         "noImplicitAny": false,
         "removeComments": false,
         "moduleResolution": "node",
-        "noLib": false
+        "noLib": false,
+        "module": "commonjs",
+        "experimentalDecorators": true,
+        "lib": [
+            "es5",
+            "dom",
+            "es2015.core",
+            "es2015.promise"
+        ],
+        "preserveConstEnums": false,
+        "jsx": "react",
+        "reactNamespace": "b"
     },
-    "filesGlob": [
-        "./**/*.ts",
-        "!./**/*.d.ts",
-        "!./node_modules/**/*",
-        "!./tests/**/*",
-        "!./examples/**/*"
-    ],
-    "files": [
-        "./typings/tsd.d.ts",
-        "./typings/jasmine/jasmine.d.ts",
-        "./index.ts",
-        "./spec/actionFactory.spec.ts",
-        "./spec/helpers.spec.ts",
-        "./spec/store.spec.ts",
-        "./spec/todosState.ts",
-        "./src/actionFactory.ts",
-        "./src/debug.ts",
-        "./src/helpers.ts",
-        "./src/store.ts"
+    "filesGlob": [],
+    "files": [],
+    "include": [
+        "**/*"
     ]
 }

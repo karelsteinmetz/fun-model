@@ -1,11 +1,7 @@
 .*
+node_modules
+/.vscode
+/typings/**/*
 *.bat
-resources
-examples
-spec
-tests
 tsconfig.json
-gulpfile.js
-build.bat
-tests.bat
 tsd.json
