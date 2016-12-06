@@ -65,6 +65,20 @@ describe('helpers', () => {
             expect(newState.id).toBe('newId');
             expect(newState.subObject).toEqual({ id: 'newSubId' });
         });
+
+        it('Copy nested array ', () => {
+            let newState = h.shallowCopy(aState);
+            newState.list = h.shallowCopy(newState.list);
+
+            expect(Array.isArray(newState.list)).toBe(true);
+            expect(newState.list.length).toBe(aState.list.length);
+
+            for (let key in newState.list) {
+                if (newState.list.hasOwnProperty(key) && typeof key !== 'function') {
+                    expect(newState.list[key]).toBe(aState.list[key]);
+                }
+            }
+        });
     });
 });
 
