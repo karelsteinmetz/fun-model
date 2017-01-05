@@ -1,5 +1,13 @@
 CHANGELOG
 ===
+2.1.0
+--
+
+New Features
+-
+
+Added state creation on each setState if cursor key does not exist. This supports dynamic state creation. Now you do not need prepaire full state before bootsraping. Do not forget initilize default state for your component in init. Default state is empty object ({}). 
+
 2.0.0
 --
 

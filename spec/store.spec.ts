@@ -5,11 +5,13 @@ import * as d from '../src/debug';
 describe('store', () => {
     beforeEach(() => {
         resetStore();
+
+        d.bootstrap(jasmine.createSpy('debugCallback'));
     });
 
     it('gets and sets root state if cursor key is rootStateKey', () => {
         s.bootstrap({ some: null });
-        let state = { some: 'state' };
+        const state = { some: 'state' };
 
         s.setState(s.rootCursor, state);
 
@@ -38,7 +40,7 @@ describe('store', () => {
             it('returns nested state by cursor', () => {
                 givenStore({ some: { nested: { state: 'value' } } });
 
-                let state = s.getState({ key: 'some.nested.state' });
+                const state = s.getState({ key: 'some.nested.state' });
 
                 expect(state).toBe('value');
             });
@@ -46,7 +48,7 @@ describe('store', () => {
             it('returns nested state by cursor when current value of sub state is empty string', () => {
                 givenStore({ some: { nested: { state: '' } } });
 
-                let state = s.getState({ key: 'some.nested.state' });
+                const state = s.getState({ key: 'some.nested.state' });
 
                 expect(state).toBe('');
             });
@@ -70,7 +72,7 @@ describe('store', () => {
             it('returns nested state in the array on specified index', () => {
                 givenTodoStore({ todos: [{ done: false, name: 'First Todo' }, { done: false, name: 'Second Todo' }] });
 
-                let state = s.getState<tds.ITodosState>({ key: 'todos.1.name' });
+                const state = s.getState<tds.ITodosState>({ key: 'todos.1.name' });
 
                 expect(state).toBe('Second Todo');
             });
@@ -78,7 +80,7 @@ describe('store', () => {
             it('returns full array when is as last key', () => {
                 givenTodoStore({ todos: [{ done: false, name: 'First Todo' }] });
 
-                let state = s.getState<tds.ITodosState>(tds.todosCursor);
+                const state = s.getState<tds.ITodosState>(tds.todosCursor);
 
                 expect(state[0].done).toBeFalsy();
             });
@@ -98,7 +100,7 @@ describe('store', () => {
         });
 
         describe('with booting', () => {
-            let rootCursorTestFixture: s.ICursor<IStateTestFixture> = {
+            const rootCursorTestFixture: s.ICursor<IStateTestFixture> = {
                 key: ''
             }
 
@@ -111,14 +113,38 @@ describe('store', () => {
                     .toThrow('Cursor key cannot be null.');
             });
 
-            it('throws if cursor has not existing key', () => {
-                expect(() => s.setState({ key: 'invalid' }, {}))
-                    .toThrow('State for cursor key (invalid) does not exist.');
+            it('creates empty object if cursor has not existing key', () => {
+                const cursor = { key: 'invalid' };
+                s.setState(cursor, {});
+
+                expect(s.getState(s.rootCursor)).toEqual({ key: null, 'invalid': {} });
             });
 
-            it('throws if cursor has nested not existing key', () => {
-                expect(() => s.setState({ key: 'not.existing.key' }, {}))
-                    .toThrow('State for cursor key (not.existing.key) does not exist.');
+            it('creates neseted empty objects if cursor has not existing key', () => {
+                const cursor = { key: 'not.existing.key' };
+                s.setState(cursor, {});
+
+                expect(s.getState(s.rootCursor)).toEqual({ key: null, 'not': { 'existing': { key: {} } } });
+            });
+
+            it('freezes state', () => {
+                d.bootstrap(jasmine.createSpy('debugCallback'));
+                givenStore({ some: { nested: { state: 'value' } } });
+
+                let state = { nested: { state: 'newValue' } };
+                s.setState({ key: 'some' }, state);
+
+                expect(Object.isFrozen(state)).toBeTruthy();
+            });
+
+            it('does not freeze state in no debug mode', () => {
+                d.bootstrap(undefined);
+                givenStore({ some: { nested: { state: 'value' } } });
+
+                let state = { nested: { state: 'newValue' } };
+                s.setState({ key: 'some' }, state);
+
+                expect(Object.isFrozen(state)).toBeFalsy();
             });
 
             it('sets nested state by cursor', () => {
@@ -138,7 +164,7 @@ describe('store', () => {
             });
 
             it('sets new instance of root state', () => {
-                let initState = { some: { nested: { state: 'value' } } };
+                const initState = { some: { nested: { state: 'value' } } };
                 givenStore(initState);
 
                 s.setState({ key: 'some' }, { nested: { state: 'newValue' } });
@@ -147,7 +173,7 @@ describe('store', () => {
             });
 
             it('logs new global state when debuging has been enabled', () => {
-                let debugCallback = jasmine.createSpy('debugCallback');
+                const debugCallback = jasmine.createSpy('debugCallback');
                 d.bootstrap(debugCallback);
                 givenStore({ some: { nested: { state: 'value' } } });
                 s.setState({ key: 'some' }, { nested: { state: 'newValue' } });
@@ -156,12 +182,12 @@ describe('store', () => {
             });
 
             it('sets new instances of nodes which is in the path to root state', () => {
-                let initState = { some: { nested: { state: 'value' } } };
+                const initState = { some: { nested: { state: 'value' } } };
                 givenStore(initState);
 
                 s.setState({ key: 'some.nested.state' }, 'newValue');
 
-                let newState = s.getState(rootCursorTestFixture);
+                const newState = s.getState(rootCursorTestFixture);
                 expect(newState).not.toBe(initState);
                 expect(newState.some).not.toBe(initState.some);
                 expect(newState.some.nested).not.toBe(initState.some.nested);
@@ -190,7 +216,7 @@ describe('store', () => {
             });
 
             it('sets new instance of array when nested item has been changed', () => {
-                let storedTodos = [{ done: false, name: 'First Todo' }, { done: false, name: 'Second Todo' }];
+                const storedTodos = [{ done: false, name: 'First Todo' }, { done: false, name: 'Second Todo' }];
                 givenTodoStore({ todos: storedTodos });
 
                 s.setState({ key: 'todos.1.name' }, 'New Todo Name');

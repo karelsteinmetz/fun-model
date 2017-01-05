@@ -47,7 +47,7 @@ export const setState = <TState extends IState>(cursor: ICursor<TState>, updated
         if (path.length === 0)
             return <any>updatedState;
         const subPath = path.shift();
-        checkSubstate(innerState, subPath, cursor.key);
+        createSubstate(innerState, subPath, cursor.key);
         const prop = innerState[subPath];
         let newSubState = null;
         if (Array.isArray(prop) && path.length > 0) {
@@ -80,6 +80,11 @@ export const setState = <TState extends IState>(cursor: ICursor<TState>, updated
 function checkSubstate(s: IState, subPath: string, cursorKey: string) {
     if (s[subPath] === undefined)
         throw `State for cursor key (${cursorKey}) does not exist.`;
+}
+
+function createSubstate(s: IState, subPath: string, cursorKey: string) {
+    if (s[subPath] === undefined)
+        s[subPath] = {};
 }
 
 function checkDefaultStateAndCursor<TState extends IState>(cursor: ICursor<TState>) {

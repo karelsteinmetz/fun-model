@@ -15,7 +15,7 @@ describe('helpers', () => {
         });
 
         it('copies all values', () => {
-            let newState = h.shallowCopy(aState);
+            const newState = h.shallowCopy(aState);
 
             expect(newState.id).toBe(aState.id);
             expect(newState.subObject.id).toBe(aState.subObject.id);
@@ -23,20 +23,20 @@ describe('helpers', () => {
         });
 
         it('returns new object', () => {
-            let newState = h.shallowCopy(aState);
+            const newState = h.shallowCopy(aState);
 
             expect(newState).not.toBe(aState);
         });
 
         it('returns original sub objects', () => {
-            let newState = h.shallowCopy(aState);
+            const newState = h.shallowCopy(aState);
 
             expect(newState.subObject).toBe(aState.subObject);
             expect(newState.list).toBe(aState.list);
         });
 
         it('sets properties in callback without return', () => {
-            let newState = h.shallowCopy(aState, s => {
+            const newState = h.shallowCopy(aState, s => {
                 s.id = 'newId';
                 s.subObject = { id: 'newSubId' };
             });
@@ -46,7 +46,7 @@ describe('helpers', () => {
         });
 
         it('sets properties in nested shallowCopy', () => {
-            let newState = h.shallowCopy(aState, s => h.shallowCopy(s, a => {
+            const newState = h.shallowCopy(aState, s => h.shallowCopy(s, a => {
                 a.id = 'newId';
                 a.subObject = { id: 'newSubId' };
                 return a;
@@ -57,7 +57,7 @@ describe('helpers', () => {
         });
 
         it('sets properties in inline style', () => {
-            let newState = h.shallowCopy(aState, s => {
+            const newState = h.shallowCopy(aState, s => {
                 s.id = 'newId';
                 s.subObject = { id: 'newSubId' };
             });
@@ -66,6 +66,33 @@ describe('helpers', () => {
             expect(newState.subObject).toEqual({ id: 'newSubId' });
         });
     });
+
+    describe('deepFreeze', () => {
+        let state: IDummyState = null;
+
+        beforeEach(() => {
+            state = {
+                id: 'anId',
+                list: [1, 2, 3],
+                subObject: {
+                    id: 'anSubId'
+                }
+            };
+            h.deepFreeze(state);
+        })
+
+        it('freezes root object', () => {
+            expect(Object.isFrozen(state)).toBeTruthy();
+        });
+
+        it('freezes nested object', () => {
+            expect(Object.isFrozen(state.subObject)).toBeTruthy();
+        });
+
+        it('freezes nested array', () => {
+            expect(Object.isFrozen(state.list)).toBeTruthy();
+        });
+    })
 });
 
 interface IDummyState {
