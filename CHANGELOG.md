@@ -1,5 +1,12 @@
 CHANGELOG
 ===
+2.0.0
+--
+
+New Features
+-
+
+Added state freezing on each setState calling in debug mode. This supports detection of immutability violation in development by throwing exception. Debug mode is enabled if you have set debugCallback in bootstraping. Thanks for the idea of GMC Software Team.
 
 1.3.0
 --

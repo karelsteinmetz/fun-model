@@ -146,6 +146,31 @@ describe('actionFactory', () => {
                 expect(s.getState(NestedCursorTestFixture).state)
                     .toBe('newValue -> newValueFromNestedAction -> newValueFromNestedAction2');
             });
+
+            it('throws on immutability violation', () => {
+                givenStore(aState('nestedStateValue'));
+                const testAction = af.createAction(SomeCursorTestFixture, (state: ISomeState) => {
+                    state.nested.state = state.nested.state + 'newValue';
+                    return state;
+                });
+
+                expect(() => {
+                    testAction();
+                }).toThrow();
+            });
+
+            it('does not throw on immutability violation in no debug mode', () => {
+                d.bootstrap(undefined);
+                givenStore(aState('nestedStateValue'));
+                const testAction = af.createAction(SomeCursorTestFixture, (state: ISomeState) => {
+                    state.nested.state = state.nested.state + 'newValue';
+                    return state;
+                });
+
+                expect(() => {
+                    testAction();
+                }).not.toThrow();
+            });
         });
     });
 
