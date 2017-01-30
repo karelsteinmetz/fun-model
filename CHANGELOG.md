@@ -1,5 +1,13 @@
 CHANGELOG
 ===
+2.2.0
+--
+
+New Features
+-
+
+Fixed shallow copying on array. Now shallow copy can be used for arrays.
+
 2.1.0
 --
 
