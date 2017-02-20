@@ -91,7 +91,7 @@ describe('helpers', () => {
                         expect(newState.list[key]).toBe(aState.list[key]);
                     }
                 }
-            })
+            });
         });
     });
 
@@ -107,7 +107,7 @@ describe('helpers', () => {
                 }
             };
             h.deepFreeze(state);
-        })
+        });
 
         it('freezes root object', () => {
             expect(Object.isFrozen(state)).toBeTruthy();
@@ -120,11 +120,11 @@ describe('helpers', () => {
         it('freezes nested array', () => {
             expect(Object.isFrozen(state.list)).toBeTruthy();
         });
-    })
+    });
 });
 
 interface IDummyState {
-    id: string
-    list: number[]
-    subObject: any
+    id: string;
+    list: number[];
+    subObject: any;
 }
