@@ -19,7 +19,7 @@
     "name": "Karel Steinmetz",
     "email": "karel.steinmetz@gmail.com"
   },
-  "devDependencies": {
-  },
-  "license": "MIT"
+  "devDependencies": {},
+  "license": "MIT",
+  "bobril": {}
 }

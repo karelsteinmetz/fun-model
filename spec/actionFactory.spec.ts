@@ -4,7 +4,7 @@ import * as af from '../src/actionFactory';
 import * as d from '../src/debug';
 
 describe('actionFactory', () => {
-    let debugCallback: d.debugCallbackType
+    let debugCallback: d.debugCallbackType;
 
     beforeEach(() => {
         resetStore();
@@ -40,7 +40,7 @@ describe('actionFactory', () => {
                         return { key: `todos.${params.index}` };
                     }
                 },
-                (state, params) => { return params.todo }
+                (state, params) => { return params.todo; }
             );
             testAction({ index: 1, todo: { done: false, name: 'New second todo' } });
 
@@ -53,7 +53,12 @@ describe('actionFactory', () => {
                 todos: [{ done: false, name: 'First todo' }, { done: false, name: 'Second todo' }]
             });
 
-            let testAction = af.createAction<boolean, number>({ create: (index) => { return { key: `todos.${index}.done` } } }, (state) => { return true; });
+            let testAction = af.createAction<boolean, number>(
+                {
+                    create: (index) => { return { key: `todos.${index}.done` }; }
+                },
+                (state) => { return true; }
+            );
             testAction(1);
 
             expect(getTodos()[1].done).toBeTruthy();
@@ -71,15 +76,19 @@ describe('actionFactory', () => {
     describe('createAction', () => {
         describe('when renderCallback has not been set', () => {
             it('does not throw if action has been only declared.', () => {
-                let testAction = af.createAction(NestedCursorTestFixture, (state: INestedState) => state);
+                let testAction = af.createAction(nestedCursorTestFixture, (state: INestedState) => state);
                 expect(testAction).not.toBeUndefined();
             });
 
             it('throws if key does not exist', () => {
                 expect(() => {
-                    let testAction = af.createAction(NestedCursorTestFixture, (state: INestedState) => { return { state: 'new nested state' }; });
+                    let testAction = af.createAction(
+                        nestedCursorTestFixture,
+                        (state: INestedState) => { return { state: 'new nested state' }; }
+                    );
                     testAction();
-                }).toThrow('Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).');
+                }).toThrow('Render callback must be set before first usage '
+                + 'through bootstrap(defaultState, () => { yourRenderCallback(); }).');
             });
         });
 
@@ -94,7 +103,7 @@ describe('actionFactory', () => {
             it('does not report current state when state has not been changed.', () => {
                 givenStore(aState('nestedStateValue'));
 
-                af.createAction(NestedCursorTestFixture, (state: INestedState) => state)();
+                af.createAction(nestedCursorTestFixture, (state: INestedState) => state)();
 
                 expect(debugCallback).not.toHaveBeenCalledWith('Global state has been changed.', undefined);
             });
@@ -103,7 +112,7 @@ describe('actionFactory', () => {
                 let newState = { state: 'newValue' };
                 givenStore(aState('nestedStateValue'));
 
-                af.createAction(NestedCursorTestFixture, (state: INestedState) => newState)();
+                af.createAction(nestedCursorTestFixture, (state: INestedState) => newState)();
 
                 expect(debugCallback).toHaveBeenCalledWith('Global state has been changed.', undefined);
             });
@@ -111,7 +120,7 @@ describe('actionFactory', () => {
             it('does not call render callback when state has not been changed', () => {
                 givenStore(aState('nestedStateValue'));
 
-                let testAction = af.createAction(NestedCursorTestFixture, (state: INestedState) => state);
+                let testAction = af.createAction(nestedCursorTestFixture, (state: INestedState) => state);
                 testAction();
 
                 expect(renderCallback).not.toHaveBeenCalled();
@@ -120,7 +129,7 @@ describe('actionFactory', () => {
             it('calls render callback when state has been changed', () => {
                 givenStore(aState('nestedStateValue'));
 
-                let testAction = af.createAction(NestedCursorTestFixture, (state: INestedState) => { return { state: 'newValue' }; })
+                let testAction = af.createAction(nestedCursorTestFixture, (state: INestedState) => { return { state: 'newValue' }; });
                 testAction();
 
                 expect(renderCallback).toHaveBeenCalled();
@@ -129,27 +138,27 @@ describe('actionFactory', () => {
             it('calls nested actions', () => {
                 givenStore(aState('value'));
 
-                const nestedAction2 = af.createAction(NestedCursorTestFixture, (state: INestedState) => {
+                const nestedAction2 = af.createAction(nestedCursorTestFixture, (state: INestedState) => {
                     return { state: `${state.state} -> newValueFromNestedAction2` };
                 });
 
-                const nestedAction = af.createAction(NestedCursorTestFixture, (state: INestedState) => {
+                const nestedAction = af.createAction(nestedCursorTestFixture, (state: INestedState) => {
                     nestedAction2();
                     return { state: `${state.state} -> newValueFromNestedAction` };
                 });
 
-                af.createAction(NestedCursorTestFixture, (state: INestedState) => {
+                af.createAction(nestedCursorTestFixture, (state: INestedState) => {
                     nestedAction();
                     return { state: 'newValue' };
                 })();
 
-                expect(s.getState(NestedCursorTestFixture).state)
+                expect(s.getState(nestedCursorTestFixture).state)
                     .toBe('newValue -> newValueFromNestedAction -> newValueFromNestedAction2');
             });
 
             it('throws on immutability violation', () => {
                 givenStore(aState('nestedStateValue'));
-                const testAction = af.createAction(SomeCursorTestFixture, (state: ISomeState) => {
+                const testAction = af.createAction(someCursorTestFixture, (state: ISomeState) => {
                     state.nested.state = state.nested.state + 'newValue';
                     return state;
                 });
@@ -162,7 +171,7 @@ describe('actionFactory', () => {
             it('does not throw on immutability violation in no debug mode', () => {
                 d.bootstrap(undefined);
                 givenStore(aState('nestedStateValue'));
-                const testAction = af.createAction(SomeCursorTestFixture, (state: ISomeState) => {
+                const testAction = af.createAction(someCursorTestFixture, (state: ISomeState) => {
                     state.nested.state = state.nested.state + 'newValue';
                     return state;
                 });
@@ -179,11 +188,12 @@ describe('actionFactory', () => {
             it('throws if key does not exist', () => {
                 expect(() => {
                     let testAction = af.createActions({
-                        cursor: NestedCursorTestFixture,
+                        cursor: nestedCursorTestFixture,
                         handler: (state: INestedState): INestedState => state
                     });
                     testAction();
-                }).toThrow('Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).');
+                }).toThrow('Render callback must be set before first usage through '
+                + 'bootstrap(defaultState, () => { yourRenderCallback(); }).');
             });
         });
 
@@ -200,10 +210,11 @@ describe('actionFactory', () => {
 
                 let testAction = af.createActions(
                     {
-                        cursor: NestedCursorTestFixture,
+                        cursor: nestedCursorTestFixture,
                         handler: (state: INestedState): INestedState => state
-                    }, {
-                        cursor: NestedCursorTestFixture,
+                    },
+                    {
+                        cursor: nestedCursorTestFixture,
                         handler: (state: INestedState): INestedState => state
                     });
                 testAction();
@@ -216,15 +227,26 @@ describe('actionFactory', () => {
 
                 let testAction = af.createActions(
                     {
-                        cursor: SomeCursorTestFixture,
-                        handler: (state: ISomeState): ISomeState => { return { nested: state.nested, state: 'newStateValue' } }
+                        cursor: someCursorTestFixture,
+                        handler: (state: ISomeState): ISomeState => { return { nested: state.nested, state: 'newStateValue' }; }
                     },
                     {
-                        cursor: NestedCursorTestFixture,
+                        cursor: nestedCursorTestFixture,
                         handler: (state: INestedState): INestedState => { return { state: 'newNestedStateValue' }; }
                     });
                 testAction();
 
+                expect(renderCallback).toHaveBeenCalled();
+            });
+
+            it('uses action as simple setter when no handler defined', () => {
+                givenStore(aState('nestedStateValue'));
+                const testAction = af.createAction<string, string>(nestedStateCursorTestFixture);
+
+                testAction('nestedStateValue');
+                expect(renderCallback).not.toHaveBeenCalled();
+
+                testAction('newNestedStateValue');
                 expect(renderCallback).toHaveBeenCalled();
             });
         });
@@ -237,16 +259,20 @@ describe('actionFactory', () => {
 
         describe('when renderCallback has not been set', () => {
             it('does not throw if action has been only declared.', () => {
-                let testAction = af.createAsyncAction(NestedCursorTestFixture, (state: INestedState) => state);
+                let testAction = af.createAsyncAction(nestedCursorTestFixture, (state: INestedState) => state);
                 expect(testAction).not.toBeUndefined();
             });
 
             it('throws if key does not exist', () => {
                 expect(() => {
-                    let testAction = af.createAsyncAction(NestedCursorTestFixture, (state: INestedState) => { return { state: 'new nested state' }; });
+                    let testAction = af.createAsyncAction(
+                        nestedCursorTestFixture,
+                        (state: INestedState) => { return { state: 'new nested state' }; }
+                    );
                     testAction();
                     jasmine.clock().tick(1);
-                }).toThrow('Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).');
+                }).toThrow('Render callback must be set before first usage through '
+                + 'bootstrap(defaultState, () => { yourRenderCallback(); }).');
             });
         });
 
@@ -261,7 +287,7 @@ describe('actionFactory', () => {
             it('does not report current state when state has not been changed.', () => {
                 givenStore(aState('nestedStateValue'));
 
-                let testAction = af.createAsyncAction(NestedCursorTestFixture, (state: INestedState) => state);
+                let testAction = af.createAsyncAction(nestedCursorTestFixture, (state: INestedState) => state);
                 testAction();
                 jasmine.clock().tick(1);
 
@@ -272,7 +298,7 @@ describe('actionFactory', () => {
                 let newState = { state: 'newValue' };
                 givenStore(aState('nestedStateValue'));
 
-                let testAction = af.createAsyncAction(NestedCursorTestFixture, (state: INestedState) => newState);
+                let testAction = af.createAsyncAction(nestedCursorTestFixture, (state: INestedState) => newState);
                 testAction();
                 jasmine.clock().tick(1);
 
@@ -282,7 +308,7 @@ describe('actionFactory', () => {
             it('does not call render callback when state has not been changed', () => {
                 givenStore(aState('nestedStateValue'));
 
-                let testAction = af.createAsyncAction(NestedCursorTestFixture, (state: INestedState) => state);
+                let testAction = af.createAsyncAction(nestedCursorTestFixture, (state: INestedState) => state);
                 testAction();
                 jasmine.clock().tick(1);
 
@@ -292,7 +318,7 @@ describe('actionFactory', () => {
             it('calls render callback when state has been changed', () => {
                 givenStore(aState('nestedStateValue'));
 
-                let testAction = af.createAsyncAction(NestedCursorTestFixture, (state: INestedState) => { return { state: 'newValue' }; });
+                let testAction = af.createAsyncAction(nestedCursorTestFixture, (state: INestedState) => { return { state: 'newValue' }; });
                 testAction();
                 jasmine.clock().tick(1);
 
@@ -303,7 +329,7 @@ describe('actionFactory', () => {
                 givenStore(aState('nestedStateValue'));
                 let newState = { state: 'newValue' };
 
-                let testAction = af.createAsyncAction(NestedCursorTestFixture, (state: INestedState) => newState);
+                let testAction = af.createAsyncAction(nestedCursorTestFixture, (state: INestedState) => newState);
                 testAction()
                     .then(r => {
                         expect(r).toBe(newState);
@@ -336,7 +362,7 @@ interface IStateTestFixture extends s.IState {
 }
 
 interface ISomeState extends s.IState {
-    nested: INestedState
+    nested: INestedState;
     state: string;
 }
 
@@ -344,10 +370,14 @@ interface INestedState extends s.IState {
     state: string;
 }
 
-var NestedCursorTestFixture: s.ICursor<INestedState> = {
-    key: 'some.nested'
-}
+const nestedStateCursorTestFixture: s.ICursor<string> = {
+    key: 'some.nested.state'
+};
 
-var SomeCursorTestFixture: s.ICursor<ISomeState> = {
+const nestedCursorTestFixture: s.ICursor<INestedState> = {
+    key: 'some.nested'
+};
+
+const someCursorTestFixture: s.ICursor<ISomeState> = {
     key: 'some'
-}
+};
