@@ -1,47 +1,27 @@
 {
-    "version": "1.6.2",
     "compileOnSave": false,
     "compilerOptions": {
         "target": "es5",
+        "declaration": false,
+        "noImplicitAny": false,
+        "removeComments": false,
+        "moduleResolution": "node",
+        "noLib": false,
         "module": "commonjs",
-        "outDir": "dist",
-        "sourceMap": false,
-        "removeComments": true,
-        "listFiles": true,
-        "declaration": true
+        "experimentalDecorators": true,
+        "lib": [
+            "es5",
+            "dom",
+            "es2015.core",
+            "es2015.promise"
+        ],
+        "preserveConstEnums": false,
+        "jsx": "react",
+        "reactNamespace": "b"
     },
-    "formatCodeOptions": {
-        "indentSize": 4,
-        "tabSize": 4,
-        "newLineCharacter": "\r\n",
-        "convertTabsToSpaces": true,
-        "insertSpaceAfterCommaDelimiter": true,
-        "insertSpaceAfterSemicolonInForStatements": true,
-        "insertSpaceBeforeAndAfterBinaryOperators": true,
-        "insertSpaceAfterKeywordsInControlFlowStatements": true,
-        "insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
-        "insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": false,
-        "placeOpenBraceOnNewLineForFunctions": false,
-        "placeOpenBraceOnNewLineForControlBlocks": false
-    },
-    "filesGlob": [
-        "./**/*.ts",
-        "!./tmp/**/*.ts",
-        "!./typed/**/*",
-        "!./node_modules/**/*",
-        "!./**/*.d.ts",
-        "!./dist/**/*",
-        "!./tests/**/*"
-    ],
-    "files": [
-        "spec/actionFactory.spec.ts",
-        "spec/helpers.spec.ts",
-        "spec/store.spec.ts",
-        "src/actionFactory.ts",
-        "src/helpers.ts",
-        "src/index.ts",
-        "src/store.ts",
-        "src/debug.ts"
-    ],
-    "exclude": []
+    "filesGlob": [],
+    "files": [],
+    "include": [
+        "**/*"
+    ]
 }

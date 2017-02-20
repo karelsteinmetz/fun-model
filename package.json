@@ -1,33 +1,25 @@
 {
   "name": "fun-model",
-  "version": "0.0.8",
+  "version": "2.2.0",
   "description": "fun-model is pure functional implementation of FLUX architecture.",
-  "main": "dist/src/index.js",
+  "main": "./index.js",
+  "typescript": {
+    "main": "./index.ts",
+    "definition": "./index.d.ts"
+  },
+  "types": "index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/karelsteinmetz/bobflux.git"
+    "url": "https://github.com/karelsteinmetz/fun-model.git"
   },
   "keywords": [
-    "flux",
-    "es6"
+    "flux"
   ],
   "author": {
     "name": "Karel Steinmetz",
     "email": "karel.steinmetz@gmail.com"
   },
-  "files": [
-    "dist/src"
-  ],
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "dependencies": {},
   "devDependencies": {
-    "gulp": "^3.9.0",
-    "gulp-jasmine": "^2.0.1",
-    "gulp-typescript": "^2.8.2",
-    "jasmine-core": "^2.3.4",
-    "systemjs": "^0.19.4"
   },
   "license": "MIT"
 }

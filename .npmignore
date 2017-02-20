@@ -1,6 +1,7 @@
+.*
 node_modules
 /.vscode
 /typings/**/*
-/**/*.d.ts
-/**/*.js
-/*.tgz
+*.bat
+tsconfig.json
+tsd.json
