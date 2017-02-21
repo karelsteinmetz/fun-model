@@ -7,10 +7,6 @@ export const bootstrap = (debugCallback: debugCallbackType | undefined) => {
     debug = debugCallback;
 };
 
-export const isDebuggingEnabled = (): boolean => {
-    return !!debug;
-}
-
 export const log = (message: string, params?: any) => {
     debug && debug(message, params);
 }

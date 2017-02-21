@@ -1,5 +1,13 @@
 CHANGELOG
 ===
+3.0.0
+--
+
+New Features
+-
+
+Crated bootstrapping optional parameters with state freezing option.
+
 2.3.0
 --
 

@@ -21,7 +21,9 @@
         "noUnusedParameters": true,
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": true,
-        "strictNullChecks": true
+        "strictNullChecks": true,
+        "jsx": "react",
+        "reactNamespace": "b"
     },
     "filesGlob": [],
     "files": [],

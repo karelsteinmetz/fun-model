@@ -299,7 +299,7 @@ describe('actionFactory', () => {
                 expect(renderCallback).toHaveBeenCalled();
             });
 
-            it('returns new state in resolve', (done) => {
+            it('returns new state in resolve', (done: Function) => {
                 givenStore(aState('nestedStateValue'));
                 let newState = { state: 'newValue' };
 
@@ -323,8 +323,8 @@ function givenStore(state: IStateTestFixture) {
     s.setState(s.rootCursor, state);
 }
 
-function resetStore() {
-    s.bootstrap({ some: { nested: { state: null } } });
+function resetStore(withFreezing: boolean = false) {
+    s.bootstrap({ some: { nested: { state: null } } }, withFreezing);
 }
 
 function aState(nestedState: string = 'aNestedState', state: string = 'aState'): IStateTestFixture {

@@ -20,22 +20,31 @@ export function objectShallowCopy<T>(source: T, callback: (target: T) => void | 
     return <T>result || target;
 };
 
-export function deepFreeze(source: any) {
-    Object.freeze(source);
-    for (var property in source)
-        if (source.hasOwnProperty(property)
-            && source[property] !== null
-            && (typeof source[property] === "object" || typeof source[property] === "function")
-            && !Object.isFrozen(source[property]))
-            deepFreeze(source[property]);
+// export function deepFreeze(source: any) {
+//     Object.freeze(source);
+//     for (var property in source)
+//         if (source.hasOwnProperty(property)
+//             && source[property] !== null
+//             && (typeof source[property] === "object" || typeof source[property] === "function")
+//             && !Object.isFrozen(source[property]))
+//             deepFreeze(source[property]);
+//     return source;
+// };
 
-    // Object.getOwnPropertyNames(source).forEach(function (prop) {
-    //     if (source.hasOwnProperty(prop)
-    //         && source[prop] !== null
-    //         && (typeof source[prop] === "object" || typeof source[prop] === "function")
-    //         && !Object.isFrozen(source[prop])) {
-    //         deepFreeze(source[prop]);
-    //     }
-    // });
+export function deepFreeze<T extends Object>(source: T): T {
+    Object.freeze(source);
+    for (var property in source) {
+        const sourceProperty = (<any>source)[property];
+        if (source.hasOwnProperty(property)
+            && sourceProperty !== null
+            && (typeof sourceProperty === "object" || typeof sourceProperty === "function")
+            && !Object.isFrozen(sourceProperty))
+            deepFreeze(sourceProperty);
+    }
+
     return source;
 };
+
+export function isFunction(val: any): val is Function {
+    return typeof val == "function";
+}

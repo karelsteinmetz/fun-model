@@ -15,15 +15,17 @@ export interface ICursorFactory<TState, TParms> {
 
 let state: IState | null = null;
 let stateSeparator = '.';
+let freezing: boolean | (() => boolean) = false;
 const rootStateKey = '';
 
 export const rootCursor: ICursor<IState> = {
     key: rootStateKey
 };
 
-export const bootstrap = (defaultState: IState | null, subStateSeparator: string = '.') => {
+export const bootstrap = (defaultState: IState | null, withStateFreezing: boolean | (() => boolean) = false, subStateSeparator: string = '.') => {
     stateSeparator = subStateSeparator;
     state = defaultState;
+    freezing = withStateFreezing;
 };
 
 export const getState = <TState extends IState>(cursor: ICursor<TState>): TState => {
@@ -88,7 +90,7 @@ export const setState = <TState extends IState>(cursor: ICursor<TState>, updated
         cursor.key === rootStateKey
             ? updatedState
             : setInnerState(state, cursor.key.split(stateSeparator));
-    if (d.isDebuggingEnabled())
+    if (h.isFunction(freezing) ? freezing() : freezing)
         h.deepFreeze(state);
     d.log('Current state:', state);
 };

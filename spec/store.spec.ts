@@ -100,7 +100,7 @@ describe('store', () => {
             }
 
             beforeEach(() => {
-                s.bootstrap({ key: null });
+                s.bootstrap({ key: null }, true);
             });
 
             it('creates empty object if cursor has not existing key', () => {
@@ -118,23 +118,12 @@ describe('store', () => {
             });
 
             it('freezes state', () => {
-                d.bootstrap(jasmine.createSpy('debugCallback'));
                 givenStore({ some: { nested: { state: 'value' } } });
 
                 let state = { nested: { state: 'newValue' } };
                 s.setState({ key: 'some' }, state);
 
                 expect(Object.isFrozen(state)).toBeTruthy();
-            });
-
-            it('does not freeze state in no debug mode', () => {
-                d.bootstrap(undefined);
-                givenStore({ some: { nested: { state: 'value' } } });
-
-                let state = { nested: { state: 'newValue' } };
-                s.setState({ key: 'some' }, state);
-
-                expect(Object.isFrozen(state)).toBeFalsy();
             });
 
             it('sets nested state by cursor', () => {
@@ -234,8 +223,9 @@ describe('store', () => {
         s.setState(s.rootCursor, state);
     }
 
-    function resetStore() {
-        s.bootstrap(null);
+
+    function resetStore(withFreezing: boolean = false) {
+        s.bootstrap(null, withFreezing);
     }
 });
 
