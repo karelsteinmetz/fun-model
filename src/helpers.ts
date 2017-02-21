@@ -20,17 +20,6 @@ export function objectShallowCopy<T>(source: T, callback: (target: T) => void | 
     return <T>result || target;
 };
 
-// export function deepFreeze(source: any) {
-//     Object.freeze(source);
-//     for (var property in source)
-//         if (source.hasOwnProperty(property)
-//             && source[property] !== null
-//             && (typeof source[property] === "object" || typeof source[property] === "function")
-//             && !Object.isFrozen(source[property]))
-//             deepFreeze(source[property]);
-//     return source;
-// };
-
 export function deepFreeze<T extends Object>(source: T): T {
     Object.freeze(source);
     for (var property in source) {

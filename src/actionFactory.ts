@@ -13,10 +13,6 @@ export interface IAction<T> {
     (param?: T): void;
 }
 
-export interface IAsyncAction<T, TState> {
-    (param?: T): Promise<TState>;
-}
-
 export type IActionHandler<TState extends s.IState, TParams> = (state: TState, t?: TParams) => TState;
 
 export const createAction = <TState extends s.IState, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, handler: IActionHandler<TState, TParams>)
@@ -53,24 +49,6 @@ export const createActions = <TState extends s.IState, TParams>(...pairs: IPair<
                     changed = true;
             }
         changed && render();
-    });
-}
-
-export const createAsyncAction = <TState extends s.IState, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, handler: IActionHandler<TState, TParams>)
-    : IAsyncAction<TParams, TState> => {
-    return <IAsyncAction<TParams, TState>>((params?: TParams): Promise<TState> => {
-        return new Promise<TState>((f) => {
-            setTimeout(() => {
-                if (render === null)
-                    throw 'Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).';
-                let c = unifyCursor<TState, TParams>(cursor, params);
-                if (changeStateWithQueue(c, handler, params)) {
-                    render();
-                    d.log('Rendering invoked...');
-                }
-                f(s.getState(c));
-            }, 0);
-        });
     });
 }
 
