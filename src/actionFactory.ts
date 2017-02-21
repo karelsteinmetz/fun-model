@@ -1,9 +1,9 @@
 import * as s from './store';
 import * as d from './debug';
 
-let render: () => void = null;
+let render: (() => void) | null = null;
 
-export let bootstrap = (renderCallback: () => void) => {
+export let bootstrap = (renderCallback: (() => void) | null) => {
     render = renderCallback;
     queueOfHandlers = [];
     d.log('Action factory has been initialized.');
@@ -22,7 +22,9 @@ export type IActionHandler<TState extends s.IState, TParams> = (state: TState, t
 export const createAction = <TState extends s.IState, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, handler: IActionHandler<TState, TParams>)
     : IAction<TParams> => {
     return <IAction<TParams>>((params?: TParams): void => {
-        validateRenderCallback();
+        if (render === null)
+            throw 'Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).';
+
         if (changeStateWithQueue(unifyCursor<TState, TParams>(cursor, params), handler, params)) {
             render();
             d.log('Rendering invoked...');
@@ -30,7 +32,7 @@ export const createAction = <TState extends s.IState, TParams>(cursor: s.ICursor
     });
 }
 
-function unifyCursor<TState extends s.IState, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, params: TParams): s.ICursor<TState> {
+function unifyCursor<TState extends s.IState, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, params: TParams | undefined): s.ICursor<TState> {
     return (<s.ICursorFactory<TState, TParams>>cursor).create instanceof Function ? (<s.ICursorFactory<TState, TParams>>cursor).create(params) : <s.ICursor<TState>>cursor;
 }
 
@@ -41,7 +43,8 @@ export interface IPair<TState extends s.IState, TParam> {
 
 export const createActions = <TState extends s.IState, TParams>(...pairs: IPair<TState, TParams>[]) => {
     return <IAction<TParams>>((params?: TParams) => {
-        validateRenderCallback();
+        if (render === null)
+            throw 'Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).';
         let changed = false;
         for (var i in pairs)
             if (pairs.hasOwnProperty(i)) {
@@ -56,9 +59,10 @@ export const createActions = <TState extends s.IState, TParams>(...pairs: IPair<
 export const createAsyncAction = <TState extends s.IState, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, handler: IActionHandler<TState, TParams>)
     : IAsyncAction<TParams, TState> => {
     return <IAsyncAction<TParams, TState>>((params?: TParams): Promise<TState> => {
-        return new Promise<TState>((f, r) => {
+        return new Promise<TState>((f) => {
             setTimeout(() => {
-                validateRenderCallback();
+                if (render === null)
+                    throw 'Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).';
                 let c = unifyCursor<TState, TParams>(cursor, params);
                 if (changeStateWithQueue(c, handler, params)) {
                     render();
@@ -68,11 +72,6 @@ export const createAsyncAction = <TState extends s.IState, TParams>(cursor: s.IC
             }, 0);
         });
     });
-}
-
-function validateRenderCallback() {
-    if (render === null)
-        throw 'Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).';
 }
 
 interface IQueuedHandling<TState extends s.IState, TParams> {
@@ -86,7 +85,7 @@ function changeStateWithQueue<TState extends s.IState, TParams>(cursor: s.ICurso
     : boolean {
     queueOfHandlers.push({ cursor, handler, params });
     if (queueOfHandlers.length > 1)
-        return;
+        return false;
     let isStateChanged = false;
     while (queueOfHandlers.length > 0) {
         let n = queueOfHandlers[0];

@@ -1,5 +1,13 @@
 CHANGELOG
 ===
+2.3.0
+--
+
+New Features
+-
+
+Used tsc code restrictions.
+
 2.2.0
 --
 

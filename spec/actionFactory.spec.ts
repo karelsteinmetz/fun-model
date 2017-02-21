@@ -36,11 +36,11 @@ describe('actionFactory', () => {
 
             let testAction = af.createAction<tds.ITodo, tds.ITodoParams>(
                 {
-                    create: (params) => {
+                    create: (params: tds.ITodoParams) => {
                         return { key: `todos.${params.index}` };
                     }
                 },
-                (state, params) => { return params.todo }
+                (_state: tds.ITodo, params: tds.ITodoParams) => { return params.todo }
             );
             testAction({ index: 1, todo: { done: false, name: 'New second todo' } });
 
@@ -53,7 +53,7 @@ describe('actionFactory', () => {
                 todos: [{ done: false, name: 'First todo' }, { done: false, name: 'Second todo' }]
             });
 
-            let testAction = af.createAction<boolean, number>({ create: (index) => { return { key: `todos.${index}.done` } } }, (state) => { return true; });
+            let testAction = af.createAction<boolean, number>({ create: (index) => { return { key: `todos.${index}.done` } } }, () => { return true; });
             testAction(1);
 
             expect(getTodos()[1].done).toBeTruthy();
@@ -77,7 +77,7 @@ describe('actionFactory', () => {
 
             it('throws if key does not exist', () => {
                 expect(() => {
-                    let testAction = af.createAction(NestedCursorTestFixture, (state: INestedState) => { return { state: 'new nested state' }; });
+                    let testAction = af.createAction(NestedCursorTestFixture, () => { return { state: 'new nested state' }; });
                     testAction();
                 }).toThrow('Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).');
             });
@@ -103,7 +103,7 @@ describe('actionFactory', () => {
                 let newState = { state: 'newValue' };
                 givenStore(aState('nestedStateValue'));
 
-                af.createAction(NestedCursorTestFixture, (state: INestedState) => newState)();
+                af.createAction(NestedCursorTestFixture, () => newState)();
 
                 expect(debugCallback).toHaveBeenCalledWith('Global state has been changed.', undefined);
             });
@@ -120,7 +120,7 @@ describe('actionFactory', () => {
             it('calls render callback when state has been changed', () => {
                 givenStore(aState('nestedStateValue'));
 
-                let testAction = af.createAction(NestedCursorTestFixture, (state: INestedState) => { return { state: 'newValue' }; })
+                let testAction = af.createAction(NestedCursorTestFixture, () => { return { state: 'newValue' }; })
                 testAction();
 
                 expect(renderCallback).toHaveBeenCalled();
@@ -138,7 +138,7 @@ describe('actionFactory', () => {
                     return { state: `${state.state} -> newValueFromNestedAction` };
                 });
 
-                af.createAction(NestedCursorTestFixture, (state: INestedState) => {
+                af.createAction(NestedCursorTestFixture, () => {
                     nestedAction();
                     return { state: 'newValue' };
                 })();
@@ -221,7 +221,7 @@ describe('actionFactory', () => {
                     },
                     {
                         cursor: NestedCursorTestFixture,
-                        handler: (state: INestedState): INestedState => { return { state: 'newNestedStateValue' }; }
+                        handler: (): INestedState => { return { state: 'newNestedStateValue' }; }
                     });
                 testAction();
 
@@ -243,7 +243,7 @@ describe('actionFactory', () => {
 
             it('throws if key does not exist', () => {
                 expect(() => {
-                    let testAction = af.createAsyncAction(NestedCursorTestFixture, (state: INestedState) => { return { state: 'new nested state' }; });
+                    let testAction = af.createAsyncAction(NestedCursorTestFixture, () => { return { state: 'new nested state' }; });
                     testAction();
                     jasmine.clock().tick(1);
                 }).toThrow('Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).');
@@ -272,7 +272,7 @@ describe('actionFactory', () => {
                 let newState = { state: 'newValue' };
                 givenStore(aState('nestedStateValue'));
 
-                let testAction = af.createAsyncAction(NestedCursorTestFixture, (state: INestedState) => newState);
+                let testAction = af.createAsyncAction(NestedCursorTestFixture, () => newState);
                 testAction();
                 jasmine.clock().tick(1);
 
@@ -292,7 +292,7 @@ describe('actionFactory', () => {
             it('calls render callback when state has been changed', () => {
                 givenStore(aState('nestedStateValue'));
 
-                let testAction = af.createAsyncAction(NestedCursorTestFixture, (state: INestedState) => { return { state: 'newValue' }; });
+                let testAction = af.createAsyncAction(NestedCursorTestFixture, () => { return { state: 'newValue' }; });
                 testAction();
                 jasmine.clock().tick(1);
 
@@ -303,7 +303,7 @@ describe('actionFactory', () => {
                 givenStore(aState('nestedStateValue'));
                 let newState = { state: 'newValue' };
 
-                let testAction = af.createAsyncAction(NestedCursorTestFixture, (state: INestedState) => newState);
+                let testAction = af.createAsyncAction(NestedCursorTestFixture, () => newState);
                 testAction()
                     .then(r => {
                         expect(r).toBe(newState);
