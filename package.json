@@ -1,6 +1,6 @@
 {
   "name": "fun-model",
-  "version": "4.0.1",
+  "version": "4.1.0",
   "description": "fun-model is pure functional implementation of FLUX architecture.",
   "main": "./index.js",
   "typescript": {

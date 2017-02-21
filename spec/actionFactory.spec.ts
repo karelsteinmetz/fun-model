@@ -69,6 +69,44 @@ describe('actionFactory', () => {
     });
 
     describe('createAction', () => {
+        describe('when action threw during handling and catching have not been enabled', () => {
+            let renderCallback: () => void;
+            let throwingAction: af.IAction<{}>;
+            beforeEach(() => {
+                renderCallback = jasmine.createSpy('render');
+                af.bootstrap(renderCallback, false);
+                throwingAction = af.createAction(NestedCursorTestFixture, () => {
+                    throw 'MyDummyException';
+                });
+            });
+
+            it('throws', () => {
+                expect(throwingAction).toThrow();
+            });
+        });
+
+        describe('when action threw during handling and catching have been enabled', () => {
+            let renderCallback: () => void;
+            let throwingAction: af.IAction<{}>;
+            beforeEach(() => {
+                renderCallback = jasmine.createSpy('render');
+                af.bootstrap(renderCallback, true);
+                throwingAction = af.createAction(NestedCursorTestFixture, () => {
+                    throw 'MyDummyException';
+                });
+            });
+
+            it('does not throw', () => {
+                expect(throwingAction).not.toThrow();
+            });
+
+            it('logs error', () => {
+                throwingAction();
+
+                expect(debugCallback).toHaveBeenCalledWith('Action factory has been initialized.', undefined);
+            });
+        });
+
         describe('when renderCallback has not been set', () => {
             it('does not throw if action has been only declared.', () => {
                 let testAction = af.createAction(NestedCursorTestFixture, (state: INestedState) => state);
@@ -216,7 +254,7 @@ describe('actionFactory', () => {
                 expect(renderCallback).toHaveBeenCalled();
             });
         });
-    });    
+    });
 });
 
 function givenStore(state: IStateTestFixture) {

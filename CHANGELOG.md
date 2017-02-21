@@ -1,5 +1,13 @@
 CHANGELOG
 ===
+4.1.0
+--
+
+New Features
+-
+
+Added withExceptionHandling optional bootstrap parameter. It should be useful in dev. mode.
+
 4.0.0
 --
 

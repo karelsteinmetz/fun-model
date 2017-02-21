@@ -1,11 +1,14 @@
 import * as s from './store';
 import * as d from './debug';
+import * as h from './helpers';
 
-let render: (() => void) | null = null;
+let stateChanged: (() => void) | null = null;
+let exceptionHandling: boolean | (() => boolean);
 
-export let bootstrap = (renderCallback: (() => void) | null) => {
-    render = renderCallback;
+export const bootstrap = (onStateChanged: (() => void) | null, withExceptionHandling: boolean | (() => boolean) = false) => {
+    stateChanged = onStateChanged;
     queueOfHandlers = [];
+    exceptionHandling = withExceptionHandling;
     d.log('Action factory has been initialized.');
 };
 
@@ -18,11 +21,11 @@ export type IActionHandler<TState extends s.IState, TParams> = (state: TState, t
 export const createAction = <TState extends s.IState, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, handler: IActionHandler<TState, TParams>)
     : IAction<TParams> => {
     return <IAction<TParams>>((params?: TParams): void => {
-        if (render === null)
+        if (stateChanged === null)
             throw 'Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).';
 
         if (changeStateWithQueue(unifyCursor<TState, TParams>(cursor, params), handler, params)) {
-            render();
+            stateChanged();
             d.log('Rendering invoked...');
         }
     });
@@ -39,7 +42,7 @@ export interface IPair<TState extends s.IState, TParam> {
 
 export const createActions = <TState extends s.IState, TParams>(...pairs: IPair<TState, TParams>[]) => {
     return <IAction<TParams>>((params?: TParams) => {
-        if (render === null)
+        if (stateChanged === null)
             throw 'Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).';
         let changed = false;
         for (var i in pairs)
@@ -48,7 +51,7 @@ export const createActions = <TState extends s.IState, TParams>(...pairs: IPair<
                 if (changeStateWithQueue(pair.cursor, pair.handler, params))
                     changed = true;
             }
-        changed && render();
+        changed && stateChanged();
     });
 }
 
@@ -67,7 +70,15 @@ function changeStateWithQueue<TState extends s.IState, TParams>(cursor: s.ICurso
     let isStateChanged = false;
     while (queueOfHandlers.length > 0) {
         let n = queueOfHandlers[0];
-        isStateChanged = changeState(n.cursor, n.handler, n.params) || isStateChanged;
+        if (h.isFunction(exceptionHandling) ? exceptionHandling() : exceptionHandling)
+            try {
+                isStateChanged = changeState(n.cursor, n.handler, n.params) || isStateChanged;
+            } catch (error) {
+                d.log('Error in action handling: ', error);
+            }
+        else
+            isStateChanged = changeState(n.cursor, n.handler, n.params) || isStateChanged;
+
         queueOfHandlers.shift();
     }
     isStateChanged && d.log('Global state has been changed.');
