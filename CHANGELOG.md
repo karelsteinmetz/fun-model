@@ -1,5 +1,14 @@
 CHANGELOG
 ===
+4.2.0
+--
+
+New Features
+-
+
+Actions in setter variant. Function createAction has a default handler working as setter.
+
+
 4.1.0
 --
 
