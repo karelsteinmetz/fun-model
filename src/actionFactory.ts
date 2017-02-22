@@ -18,7 +18,9 @@ export interface IAction<T> {
 
 export type IActionHandler<TState extends s.IState, TParams> = (state: TState, t?: TParams) => TState;
 
-export const createAction = <TState extends s.IState, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, handler: IActionHandler<TState, TParams>)
+function defaultHandler<TValue>(_oldValue: TValue, newValue: TValue) { return newValue; }
+
+export const createAction = <TState extends s.IState, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, handler: IActionHandler<TState, TParams> = defaultHandler)
     : IAction<TParams> => {
     return <IAction<TParams>>((params?: TParams): void => {
         if (stateChanged === null)
