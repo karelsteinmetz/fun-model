@@ -1,5 +1,37 @@
 CHANGELOG
 ===
+4.1.0
+--
+
+New Features
+-
+
+Added withExceptionHandling optional bootstrap parameter. It should be useful in dev. mode.
+
+4.0.0
+--
+
+New Features
+-
+
+Removed createAsyncAction.
+
+3.0.0
+--
+
+New Features
+-
+
+Created bootstrapping optional parameters with state freezing option.
+
+2.3.0
+--
+
+New Features
+-
+
+Used tsc code restrictions.
+
 2.2.0
 --
 

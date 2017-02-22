@@ -96,7 +96,7 @@ describe('helpers', () => {
     });
 
     describe('deepFreeze', () => {
-        let state: IDummyState = null;
+        let state: IDummyState;
 
         beforeEach(() => {
             state = {

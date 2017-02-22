@@ -57,11 +57,6 @@ describe('store', () => {
                 expect(() => s.getState<s.IState>({ key: 'not.existing.key' }))
                     .toThrow('State for cursor key (not.existing.key) does not exist.');
             });
-
-            it('throws if cursor key is null', () => {
-                expect(() => s.getState<s.IState>({ key: null }))
-                    .toThrow('Cursor key cannot be null.');
-            });
         });
 
         describe('with booting and dynamic/array cursor', () => {
@@ -80,7 +75,7 @@ describe('store', () => {
             it('returns full array when is as last key', () => {
                 givenTodoStore({ todos: [{ done: false, name: 'First Todo' }] });
 
-                const state = s.getState<tds.ITodosState>(tds.todosCursor);
+                const state = s.getState<tds.ITodo[]>(tds.todosCursor);
 
                 expect(state[0].done).toBeFalsy();
             });
@@ -105,12 +100,7 @@ describe('store', () => {
             }
 
             beforeEach(() => {
-                s.bootstrap({ key: null });
-            });
-
-            it('throws if cursor key is null', () => {
-                expect(() => s.setState({ key: null }, {}))
-                    .toThrow('Cursor key cannot be null.');
+                s.bootstrap({ key: null }, true);
             });
 
             it('creates empty object if cursor has not existing key', () => {
@@ -128,23 +118,12 @@ describe('store', () => {
             });
 
             it('freezes state', () => {
-                d.bootstrap(jasmine.createSpy('debugCallback'));
                 givenStore({ some: { nested: { state: 'value' } } });
 
                 let state = { nested: { state: 'newValue' } };
                 s.setState({ key: 'some' }, state);
 
                 expect(Object.isFrozen(state)).toBeTruthy();
-            });
-
-            it('does not freeze state in no debug mode', () => {
-                d.bootstrap(undefined);
-                givenStore({ some: { nested: { state: 'value' } } });
-
-                let state = { nested: { state: 'newValue' } };
-                s.setState({ key: 'some' }, state);
-
-                expect(Object.isFrozen(state)).toBeFalsy();
             });
 
             it('sets nested state by cursor', () => {
@@ -244,8 +223,9 @@ describe('store', () => {
         s.setState(s.rootCursor, state);
     }
 
-    function resetStore() {
-        s.bootstrap(null);
+
+    function resetStore(withFreezing: boolean = false) {
+        s.bootstrap(null, withFreezing);
     }
 });
 
