@@ -15,12 +15,12 @@
             "es2015.core",
             "es2015.promise"
         ],
-        "preserveConstEnums": false
+        "preserveConstEnums": false,
+        "jsx": "react",
+        "reactNamespace": "b"
     },
     "filesGlob": [],
-    "files": [
-        "C:/Users/t.rut/AppData/Roaming/npm/node_modules/bobril-build/typings/jasmine/jasmine.d.ts"
-    ],
+    "files": [],
     "include": [
         "**/*"
     ]

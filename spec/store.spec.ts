@@ -28,8 +28,7 @@ describe('store', () => {
         describe('without booting', () => {
             it('throws if key does not exist', () => {
                 expect(() => s.getState<s.IState>(s.rootCursor))
-                    .toThrow('Default state must be set before first usage through '
-                    + 'bootstrap(defaultState, () => { yourRenderCallback(); }).');
+                    .toThrow('Default state must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).');
             });
         });
 
@@ -96,15 +95,14 @@ describe('store', () => {
         describe('without booting', () => {
             it('throws if key does not exist', () => {
                 expect(() => s.setState(s.rootCursor, {}))
-                    .toThrow('Default state must be set before first usage through '
-                    + 'bootstrap(defaultState, () => { yourRenderCallback(); }).');
+                    .toThrow('Default state must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).');
             });
         });
 
         describe('with booting', () => {
             const rootCursorTestFixture: s.ICursor<IStateTestFixture> = {
                 key: ''
-            };
+            }
 
             beforeEach(() => {
                 s.bootstrap({ key: null });
@@ -256,5 +254,5 @@ interface IStateTestFixture extends s.IState {
         nested: {
             state: string;
         }
-    };
+    }
 }

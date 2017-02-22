@@ -19,13 +19,8 @@ export interface IAsyncAction<T, TState> {
 
 export type IActionHandler<TState extends s.IState, TParams> = (state: TState, t?: TParams) => TState;
 
-function defaultHandler<TValue>(oldValue: TValue, newValue: TValue) { return newValue; }
-
-export function createAction<TState extends s.IState, TParams>(
-    cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>,
-    handler: IActionHandler<TState, TParams> = defaultHandler)
-    : IAction<TParams> {
-
+export const createAction = <TState extends s.IState, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, handler: IActionHandler<TState, TParams>)
+    : IAction<TParams> => {
     return <IAction<TParams>>((params?: TParams): void => {
         validateRenderCallback();
         if (changeStateWithQueue(unifyCursor<TState, TParams>(cursor, params), handler, params)) {
@@ -35,24 +30,20 @@ export function createAction<TState extends s.IState, TParams>(
     });
 }
 
-function unifyCursor<TState extends s.IState, TParams>(
-    cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, params: TParams): s.ICursor<TState> {
-
-    return (<s.ICursorFactory<TState, TParams>>cursor).create instanceof Function
-        ? (<s.ICursorFactory<TState, TParams>>cursor).create(params)
-        : <s.ICursor<TState>>cursor;
+function unifyCursor<TState extends s.IState, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, params: TParams): s.ICursor<TState> {
+    return (<s.ICursorFactory<TState, TParams>>cursor).create instanceof Function ? (<s.ICursorFactory<TState, TParams>>cursor).create(params) : <s.ICursor<TState>>cursor;
 }
 
 export interface IPair<TState extends s.IState, TParam> {
     cursor: s.ICursor<TState>;
-    handler: (state: TState, t?: TParam) => TState;
+    handler: (state: TState, t?: TParam) => TState
 }
 
-export function createActions<TState extends s.IState, TParams>(...pairs: IPair<TState, TParams>[]) {
+export const createActions = <TState extends s.IState, TParams>(...pairs: IPair<TState, TParams>[]) => {
     return <IAction<TParams>>((params?: TParams) => {
         validateRenderCallback();
         let changed = false;
-        for (let i in pairs)
+        for (var i in pairs)
             if (pairs.hasOwnProperty(i)) {
                 let pair = pairs[i];
                 if (changeStateWithQueue(pair.cursor, pair.handler, params))
@@ -62,24 +53,19 @@ export function createActions<TState extends s.IState, TParams>(...pairs: IPair<
     });
 }
 
-export function createAsyncAction<TState extends s.IState, TParams>(
-    cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, handler: IActionHandler<TState, TParams>)
-    : IAsyncAction<TParams, TState> {
-
+export const createAsyncAction = <TState extends s.IState, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, handler: IActionHandler<TState, TParams>)
+    : IAsyncAction<TParams, TState> => {
     return <IAsyncAction<TParams, TState>>((params?: TParams): Promise<TState> => {
         return new Promise<TState>((f, r) => {
-            setTimeout(
-                () => {
-                    validateRenderCallback();
-                    let c = unifyCursor<TState, TParams>(cursor, params);
-                    if (changeStateWithQueue(c, handler, params)) {
-                        render();
-                        d.log('Rendering invoked...');
-                    }
-                    f(s.getState(c));
-                },
-                0
-            );
+            setTimeout(() => {
+                validateRenderCallback();
+                let c = unifyCursor<TState, TParams>(cursor, params);
+                if (changeStateWithQueue(c, handler, params)) {
+                    render();
+                    d.log('Rendering invoked...');
+                }
+                f(s.getState(c));
+            }, 0);
         });
     });
 }
@@ -96,9 +82,8 @@ interface IQueuedHandling<TState extends s.IState, TParams> {
 }
 
 let queueOfHandlers: IQueuedHandling<s.IState, Object>[] = [];
-function changeStateWithQueue<TState extends s.IState, TParams>(
-    cursor: s.ICursor<TState>, handler: IActionHandler<TState, TParams>, params: TParams): boolean {
-
+function changeStateWithQueue<TState extends s.IState, TParams>(cursor: s.ICursor<TState>, handler: IActionHandler<TState, TParams>, params: TParams)
+    : boolean {
     queueOfHandlers.push({ cursor, handler, params });
     if (queueOfHandlers.length > 1)
         return;

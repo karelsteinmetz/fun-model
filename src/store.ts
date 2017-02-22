@@ -54,9 +54,9 @@ export const setState = <TState extends IState>(cursor: ICursor<TState>, updated
             let index = Number(path.shift());
             newSubState = [...prop];
             newSubState[index] = setInnerState(newSubState[index], path);
-        } else {
-            newSubState = setInnerState(prop, path);
         }
+        else
+            newSubState = setInnerState(prop, path);
 
         if (newSubState === prop)
             return innerState;
@@ -68,9 +68,10 @@ export const setState = <TState extends IState>(cursor: ICursor<TState>, updated
 
     checkDefaultStateAndCursor(cursor);
 
-    state = cursor.key === rootStateKey
-        ? updatedState
-        : setInnerState(state, cursor.key.split(stateSeparator));
+    state =
+        cursor.key === rootStateKey
+            ? updatedState
+            : setInnerState(state, cursor.key.split(stateSeparator));
     if (d.isDebuggingEnabled())
         h.deepFreeze(state);
     d.log('Current state:', state);
