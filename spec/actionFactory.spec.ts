@@ -253,6 +253,17 @@ describe('actionFactory', () => {
 
                 expect(renderCallback).toHaveBeenCalled();
             });
+
+            it('uses action as simple setter when no handler defined', () => {
+                givenStore(aState('nestedStateValue'));
+                const testAction = af.createAction<string, string>(NestedStateCursorTestFixture);
+
+                testAction('nestedStateValue');
+                expect(renderCallback).not.toHaveBeenCalled();
+
+                testAction('newNestedStateValue');
+                expect(renderCallback).toHaveBeenCalled();
+            });
         });
     });
 });
@@ -284,6 +295,10 @@ interface INestedState extends s.IState {
 
 var NestedCursorTestFixture: s.ICursor<INestedState> = {
     key: 'some.nested'
+}
+
+var NestedStateCursorTestFixture: s.ICursor<string> = {
+    key: 'some.nested.state'
 }
 
 var SomeCursorTestFixture: s.ICursor<ISomeState> = {
