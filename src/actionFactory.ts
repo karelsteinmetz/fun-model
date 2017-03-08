@@ -16,13 +16,13 @@ export interface IAction<T> {
     (param?: T): void;
 }
 
-export type IActionHandler<TState extends s.IState, TParams> = (state: TState, t?: TParams) => TState;
+export type IActionHandler<TState extends s.IState, TParams> = (state: TState, t: TParams) => TState;
 
 function defaultHandler<TValue>(_oldValue: TValue, newValue: TValue) { return newValue; }
 
 export const createAction = <TState extends s.IState, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, handler: IActionHandler<TState, TParams> = defaultHandler)
     : IAction<TParams> => {
-    return <IAction<TParams>>((params?: TParams): void => {
+    return <IAction<TParams>>((params: TParams): void => {
         if (stateChanged === null)
             throw 'Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).';
 
@@ -33,17 +33,17 @@ export const createAction = <TState extends s.IState, TParams>(cursor: s.ICursor
     });
 }
 
-function unifyCursor<TState extends s.IState, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, params: TParams | undefined): s.ICursor<TState> {
+function unifyCursor<TState extends s.IState, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, params: TParams): s.ICursor<TState> {
     return (<s.ICursorFactory<TState, TParams>>cursor).create instanceof Function ? (<s.ICursorFactory<TState, TParams>>cursor).create(params) : <s.ICursor<TState>>cursor;
 }
 
 export interface IPair<TState extends s.IState, TParam> {
     cursor: s.ICursor<TState>;
-    handler: (state: TState, t?: TParam) => TState
+    handler: (state: TState, t: TParam) => TState
 }
 
 export const createActions = <TState extends s.IState, TParams>(...pairs: IPair<TState, TParams>[]) => {
-    return <IAction<TParams>>((params?: TParams) => {
+    return <IAction<TParams>>((params: TParams) => {
         if (stateChanged === null)
             throw 'Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).';
         let changed = false;
