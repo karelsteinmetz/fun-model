@@ -24,6 +24,44 @@ describe('store', () => {
         });
     });
 
+    describe('isExistingCursor', () => {
+        describe('for Object', () => {
+            beforeEach(() => {
+                s.bootstrap({ some: { nested: { state: 'value' } } });
+            });
+
+            it('returns true when value exists in state through cursor', () => {
+                const exists = s.isExistingCursor({ key: 'some.nested.state' });
+
+                expect(exists).toBeTruthy();
+            });
+
+            it('returns false when value does not exist in state through cursor', () => {
+                const exists = s.isExistingCursor({ key: 'some.nested.notExistingState' });
+
+                expect(exists).toBeFalsy();
+            });
+        });
+        describe('for Array', () => {
+            beforeEach(() => {
+                s.bootstrap({ some: { nested: { arrayState: ['value1', 'value2'] } } });
+            });
+
+            it('returns true when value exists in state through cursor', () => {
+                debugger;
+                const exists = s.isExistingCursor({ key: 'some.nested.arrayState.0' });
+
+                expect(exists).toBeTruthy();
+            });
+
+            it('returns false when value does not exist in state through cursor', () => {
+                const exists = s.isExistingCursor({ key: 'some.nested.arrayState.5' });
+
+                expect(exists).toBeFalsy();
+            });
+        });
+    });
+
     describe('getState', () => {
         describe('without booting', () => {
             it('throws if key does not exist', () => {

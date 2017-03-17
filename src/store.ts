@@ -28,6 +28,35 @@ export const bootstrap = (defaultState: IState | null, withStateFreezing: boolea
     freezing = withStateFreezing;
 };
 
+export const isExistingCursor = <TState extends IState>(cursor: ICursor<TState>): boolean => {
+    const hasExistingInnerStateInArray = (innerState: IState[], path: string[]): boolean => {
+        const index = Number(path.shift());
+        return index < innerState.length
+            ? hasExistingInnerState(innerState[index], path)
+            : false;
+    }
+    const hasExistingInnerState = (innerState: IState, path: string[]): boolean => {
+        if (path.length === 0)
+            return true;
+        const subPath = path.shift();
+        if (!subPath)
+            return true;
+        if ((<any>innerState)[subPath] === undefined)
+            return false;
+        const prop = (<any>innerState)[subPath];
+        return Array.isArray(prop)
+            ? hasExistingInnerStateInArray(prop, path)
+            : hasExistingInnerState(prop, path);
+    };
+
+    if (!isSetDefaultState(state) || !isValidCursorKey(cursor))
+        throw 'Invalid operation.';
+
+    return cursor.key === rootStateKey
+        ? true
+        : hasExistingInnerState(state, cursor.key.split(stateSeparator));
+}
+
 export const getState = <TState extends IState>(cursor: ICursor<TState>): TState => {
     const getInnerState = (innerState: IState, path: string[]): IState => {
         if (path.length === 0)
@@ -42,11 +71,8 @@ export const getState = <TState extends IState>(cursor: ICursor<TState>): TState
             : getInnerState(prop, path);
     };
 
-    if (state === null)
-        throw 'Default state must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).';
-
-    if (cursor.key === null)
-        throw 'Cursor key cannot be null.';
+    if (!isSetDefaultState(state) || !isValidCursorKey(cursor))
+        throw 'Invalid operation.';
 
     return <TState>(cursor.key === rootStateKey
         ? state
@@ -80,11 +106,8 @@ export const setState = <TState extends IState>(cursor: ICursor<TState>, updated
         return newState;
     };
 
-    if (state === null)
-        throw 'Default state must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).';
-
-    if (cursor.key === null)
-        throw 'Cursor key cannot be null.';
+    if (!isSetDefaultState(state) || !isValidCursorKey(cursor))
+        throw 'Invalid operation.';
 
     state =
         cursor.key === rootStateKey
@@ -103,4 +126,16 @@ function checkSubstate(s: IState, subPath: string, cursorKey: string) {
 function createSubstate(s: IState, subPath: string) {
     if ((<any>s)[subPath] === undefined)
         (<any>s)[subPath] = {};
+}
+
+function isSetDefaultState<T>(state: T | null): state is T {
+    if (state === null)
+        throw 'Default state must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).';
+    return true;
+}
+
+function isValidCursorKey<TState extends IState>(cursor: ICursor<TState>): boolean {
+    if (cursor.key === null)
+        throw 'Cursor key cannot be null.';
+    return true;
 }

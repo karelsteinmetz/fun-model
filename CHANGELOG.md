@@ -1,5 +1,13 @@
 CHANGELOG
 ===
+4.3.0
+--
+
+New Features
+-
+
+Created isExistingCursor helper method. Now you can check validity of cursor in current state.
+
 4.2.0
 --
 
