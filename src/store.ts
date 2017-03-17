@@ -10,7 +10,7 @@ export interface ICursor<TState extends IState> {
 }
 
 export interface ICursorFactory<TState, TParms> {
-    create(data?: TParms): ICursor<TState>;
+    create(data: TParms): ICursor<TState>;
 }
 
 let state: IState | null = null;
