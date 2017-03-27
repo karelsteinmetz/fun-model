@@ -31,7 +31,8 @@ describe('actionFactory', () => {
 
         it('changes state in array', () => {
             givenTodosStore({
-                todos: [{ done: false, name: 'First todo' }, { done: false, name: 'Second todo' }]
+                todos: [{ done: false, name: 'First todo' }, { done: false, name: 'Second todo' }],
+                nullableNumber: null
             });
 
             let testAction = af.createAction<tds.ITodo, tds.ITodoParams>(
@@ -50,7 +51,8 @@ describe('actionFactory', () => {
 
         it('changes nested state on existing index', () => {
             givenTodosStore({
-                todos: [{ done: false, name: 'First todo' }, { done: false, name: 'Second todo' }]
+                todos: [{ done: false, name: 'First todo' }, { done: false, name: 'Second todo' }],
+                nullableNumber: null
             });
 
             let testAction = af.createAction<boolean, number>({ create: (index) => { return { key: `todos.${index}.done` } } }, () => { return true; });
