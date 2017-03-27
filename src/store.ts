@@ -4,7 +4,7 @@ import * as d from './debug';
 export interface IState {
 }
 
-export interface ICursor<TState extends IState> {
+export interface ICursor<TState extends IState | null> {
     key: string;
     _?: TState;
 }
@@ -28,7 +28,7 @@ export const bootstrap = (defaultState: IState | null, withStateFreezing: boolea
     freezing = withStateFreezing;
 };
 
-export const isExistingCursor = <TState extends IState>(cursor: ICursor<TState>): boolean => {
+export const isExistingCursor = <TState extends IState | null>(cursor: ICursor<TState>): boolean => {
     const hasExistingInnerStateInArray = (innerState: IState[], path: string[]): boolean => {
         const index = Number(path.shift());
         return index < innerState.length
@@ -57,7 +57,7 @@ export const isExistingCursor = <TState extends IState>(cursor: ICursor<TState>)
         : hasExistingInnerState(state, cursor.key.split(stateSeparator));
 }
 
-export const getState = <TState extends IState>(cursor: ICursor<TState>): TState => {
+export const getState = <TState extends IState | null>(cursor: ICursor<TState>): TState => {
     const getInnerState = (innerState: IState, path: string[]): IState => {
         if (path.length === 0)
             return innerState;
@@ -79,8 +79,8 @@ export const getState = <TState extends IState>(cursor: ICursor<TState>): TState
         : getInnerState(state, cursor.key.split(stateSeparator)));
 };
 
-export const setState = <TState extends IState>(cursor: ICursor<TState>, updatedState: TState) => {
-    const setInnerState = <TInnerState extends IState>(innerState: TInnerState, path: string[]): TInnerState => {
+export const setState = <TState extends IState | null>(cursor: ICursor<TState>, updatedState: TState) => {
+    const setInnerState = <TInnerState extends IState | null>(innerState: TInnerState, path: string[]): TInnerState => {
         if (path.length === 0)
             return <any>updatedState;
         const subPath = path.shift();
@@ -118,12 +118,12 @@ export const setState = <TState extends IState>(cursor: ICursor<TState>, updated
     d.log('Current state:', state);
 };
 
-function checkSubstate(s: IState, subPath: string, cursorKey: string) {
+function checkSubstate<TState extends IState | null>(s: TState, subPath: string, cursorKey: string) {
     if ((<any>s)[subPath] === undefined)
         throw `State for cursor key (${cursorKey}) does not exist.`;
 }
 
-function createSubstate(s: IState, subPath: string) {
+function createSubstate<TState extends IState | null>(s: TState, subPath: string) {
     if ((<any>s)[subPath] === undefined)
         (<any>s)[subPath] = {};
 }
@@ -134,7 +134,7 @@ function isSetDefaultState<T>(state: T | null): state is T {
     return true;
 }
 
-function isValidCursorKey<TState extends IState>(cursor: ICursor<TState>): boolean {
+function isValidCursorKey<TState extends IState | null>(cursor: ICursor<TState>): boolean {
     if (cursor.key === null)
         throw 'Cursor key cannot be null.';
     return true;
