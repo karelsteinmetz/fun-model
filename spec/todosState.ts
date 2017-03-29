@@ -1,12 +1,14 @@
 import * as s from '../src/store';
 
 export interface ITodosState extends s.IState {
-    todos: ITodo[]
+    todos: ITodo[];
+    nullableNumber: number | null;
 }
 
 export default (): ITodosState => {
     return {
-        todos: []
+        todos: [],
+        nullableNumber: null
     }
 }
 
@@ -22,4 +24,8 @@ export interface ITodoParams {
 
 export const todosCursor: s.ICursor<ITodo[]> = {
     key: 'todos'
+}
+
+export const nullableNumberCursor: s.ICursor<number | null> = {
+    key: 'nullableNumber'
 }

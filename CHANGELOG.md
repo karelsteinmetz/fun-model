@@ -1,5 +1,13 @@
 CHANGELOG
 ===
+5.0.0
+--
+
+New Features
+-
+
+Created createParamLessAction and added support for nullability in cursors.
+
 4.3.0
 --
 

@@ -103,7 +103,10 @@ describe('store', () => {
             });
 
             it('returns nested state in the array on specified index', () => {
-                givenTodoStore({ todos: [{ done: false, name: 'First Todo' }, { done: false, name: 'Second Todo' }] });
+                givenTodoStore({ 
+                    todos: [{ done: false, name: 'First Todo' }, { done: false, name: 'Second Todo' }] ,
+                    nullableNumber: null
+                });
 
                 const state = s.getState<tds.ITodosState>({ key: 'todos.1.name' });
 
@@ -111,7 +114,10 @@ describe('store', () => {
             });
 
             it('returns full array when is as last key', () => {
-                givenTodoStore({ todos: [{ done: false, name: 'First Todo' }] });
+                givenTodoStore({ 
+                    todos: [{ done: false, name: 'First Todo' }],
+                    nullableNumber: null
+                });
 
                 const state = s.getState<tds.ITodo[]>(tds.todosCursor);
 
@@ -217,7 +223,10 @@ describe('store', () => {
             });
 
             it('sets nested state into array on specified index', () => {
-                givenTodoStore({ todos: [{ done: false, name: 'First Todo' }, { done: false, name: 'Second Todo' }] });
+                givenTodoStore({ 
+                    todos: [{ done: false, name: 'First Todo' }, { done: false, name: 'Second Todo' }],
+                    nullableNumber: null
+                });
 
                 s.setState({ key: 'todos.1.name' }, 'New Todo Name');
 
@@ -225,7 +234,10 @@ describe('store', () => {
             });
 
             it('sets new state into array on specified index', () => {
-                givenTodoStore({ todos: [{ done: false, name: 'First Todo' }] });
+                givenTodoStore({ 
+                    todos: [{ done: false, name: 'First Todo' }],
+                    nullableNumber: null
+                });
 
                 s.setState({ key: 'todos.0' }, { done: false, name: 'Second Todo' });
 
@@ -234,7 +246,10 @@ describe('store', () => {
 
             it('sets new instance of array when nested item has been changed', () => {
                 const storedTodos = [{ done: false, name: 'First Todo' }, { done: false, name: 'Second Todo' }];
-                givenTodoStore({ todos: storedTodos });
+                givenTodoStore({ 
+                    todos: storedTodos,
+                    nullableNumber: null
+                });
 
                 s.setState({ key: 'todos.1.name' }, 'New Todo Name');
 
@@ -242,7 +257,10 @@ describe('store', () => {
             });
 
             it('sets full array', () => {
-                givenTodoStore({ todos: [{ done: false, name: 'First Todo' }] });
+                givenTodoStore({ 
+                    todos: [{ done: false, name: 'First Todo' }],
+                    nullableNumber: null
+                });
 
                 s.setState(tds.todosCursor, [{ done: false, name: 'Second Todo' }, { done: false, name: 'Third Todo' }]);
 
@@ -254,6 +272,35 @@ describe('store', () => {
             function givenTodoStore(state: tds.ITodosState) {
                 s.setState(s.rootCursor, state);
             }
+        });
+
+        describe('with booting and nullableNumber cursor', () => {
+            beforeEach(() => {
+                s.bootstrap(tds.default());
+            });
+
+            it('read null from state', () => {
+                const value = s.getState(tds.nullableNumberCursor);
+
+                expect(value).toBeNull();
+            });
+
+            it('write value to state', () => {
+                s.setState(tds.nullableNumberCursor, 10);
+
+                expect(s.getState(tds.nullableNumberCursor)).toBe(10);
+            });
+
+            it('write null to state', () => {
+                s.setState(s.rootCursor, <tds.ITodosState>{ 
+                    todos: [{ done: false, name: 'First Todo' }],
+                    nullableNumber: 10
+                });
+
+                s.setState(tds.nullableNumberCursor, null);
+
+                expect(s.getState(tds.nullableNumberCursor)).toBeNull();
+            });
         });
     });
 
