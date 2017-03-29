@@ -20,15 +20,15 @@ export interface IParamLessAction {
     (): void;
 }
 
-export type IActionHandler<TState extends s.IState, TParams> = (state: TState, t: TParams) => TState;
+export type IActionHandler<TState extends s.IState | null, TParams> = (state: TState, t: TParams) => TState;
 
-export type IParamLessActionHandler<TState extends s.IState> = (state: TState) => TState;
+export type IParamLessActionHandler<TState extends s.IState | null> = (state: TState) => TState;
 
-type IInternalActionHandler<TState extends s.IState> = (state: TState) => TState;
+type IInternalActionHandler<TState extends s.IState | null> = (state: TState) => TState;
 
 function defaultHandler<TValue>(_oldValue: TValue, newValue: TValue) { return newValue; }
 
-export const createAction = <TState extends s.IState, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, handler: IActionHandler<TState, TParams> = defaultHandler)
+export const createAction = <TState extends s.IState | null, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, handler: IActionHandler<TState, TParams> = defaultHandler)
     : IAction<TParams> => {
     return <IAction<TParams>>((params: TParams): void => {
         if (stateChanged === null)
@@ -41,7 +41,7 @@ export const createAction = <TState extends s.IState, TParams>(cursor: s.ICursor
     });
 };
 
-export const createParamLessAction = <TState extends s.IState>(cursor: s.ICursor<TState>, handler: IParamLessActionHandler<TState>)
+export const createParamLessAction = <TState extends s.IState | null>(cursor: s.ICursor<TState>, handler: IParamLessActionHandler<TState>)
     : IParamLessAction => {
     return <IParamLessAction>((): void => {
         if (stateChanged === null)
@@ -54,16 +54,16 @@ export const createParamLessAction = <TState extends s.IState>(cursor: s.ICursor
     });
 };
 
-function unifyCursor<TState extends s.IState, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, params: TParams): s.ICursor<TState> {
+function unifyCursor<TState extends s.IState | null, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, params: TParams): s.ICursor<TState> {
     return (<s.ICursorFactory<TState, TParams>>cursor).create instanceof Function ? (<s.ICursorFactory<TState, TParams>>cursor).create(params) : <s.ICursor<TState>>cursor;
 }
 
-export interface IPair<TState extends s.IState, TParam> {
+export interface IPair<TState extends s.IState | null, TParam> {
     cursor: s.ICursor<TState>;
     handler: (state: TState, t: TParam) => TState
 }
 
-export const createActions = <TState extends s.IState, TParams>(...pairs: IPair<TState, TParams>[]) => {
+export const createActions = <TState extends s.IState | null, TParams>(...pairs: IPair<TState, TParams>[]) => {
     return <IAction<TParams>>((params: TParams) => {
         if (stateChanged === null)
             throw 'Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).';
@@ -98,13 +98,13 @@ export const createParamLessActions = <TState extends s.IState>(...pairs: IParam
     });
 };
 
-interface IQueuedHandling<TState extends s.IState> {
+interface IQueuedHandling<TState extends s.IState | null> {
     cursor: s.ICursor<TState>;
     handler: IInternalActionHandler<TState>;
 }
 
-let queueOfHandlers: IQueuedHandling<s.IState>[] = [];
-function changeStateWithQueue<TState extends s.IState>(cursor: s.ICursor<TState>, handler: IInternalActionHandler<TState>)
+let queueOfHandlers: IQueuedHandling<s.IState | null>[] = [];
+function changeStateWithQueue<TState extends s.IState | null>(cursor: s.ICursor<TState>, handler: IInternalActionHandler<TState>)
     : boolean {
     queueOfHandlers.push({ cursor, handler });
     if (queueOfHandlers.length > 1)
@@ -127,7 +127,7 @@ function changeStateWithQueue<TState extends s.IState>(cursor: s.ICursor<TState>
     return isStateChanged;
 }
 
-function changeState<TState extends s.IState>(cursor: s.ICursor<TState>, handler: IInternalActionHandler<TState>)
+function changeState<TState extends s.IState | null>(cursor: s.ICursor<TState>, handler: IInternalActionHandler<TState>)
     : boolean {
     let oldState = s.getState(cursor);
     let newState = handler(oldState);
