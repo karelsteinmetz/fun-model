@@ -1,12 +1,12 @@
 
 export type debugCallbackType = (message: string, params?: any) => void
 
-let debug: debugCallbackType = undefined;
+export let debug: debugCallbackType | undefined = undefined;
 
-export let bootstrap = (debugCallback: debugCallbackType) => {
+export const bootstrap = (debugCallback: debugCallbackType | undefined) => {
     debug = debugCallback;
 };
 
-export function log(message: string, params?: any) {
+export const log = (message: string, params?: any) => {
     debug && debug(message, params);
 }
