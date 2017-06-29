@@ -48,7 +48,6 @@ describe('store', () => {
             });
 
             it('returns true when value exists in state through cursor', () => {
-                debugger;
                 const exists = s.isExistingCursor({ key: 'some.nested.arrayState.0' });
 
                 expect(exists).toBeTruthy();
@@ -92,9 +91,17 @@ describe('store', () => {
             });
 
             it('throws if key does not exist', () => {
-                expect(() => s.getState<s.IState>({ key: 'not.existing.key' }))
-                    .toThrow('State for cursor key (not.existing.key) does not exist.');
+                expect(() => s.getState<s.IState>({ key: 'notExistingKey' }))
+                    .toThrow('State for cursor key (notExistingKey) does not exist.');
             });
+
+            it('returns udefined if cursor allows that', () => {
+                givenStore({ some: { nested: { state: 'value' } } });
+
+                const state = s.getState({ key: 'some.nested.optional', isUndefinable: true });
+
+                expect(state).toBeUndefined();
+            })
         });
 
         describe('with booting and dynamic/array cursor', () => {
@@ -103,8 +110,8 @@ describe('store', () => {
             });
 
             it('returns nested state in the array on specified index', () => {
-                givenTodoStore({ 
-                    todos: [{ done: false, name: 'First Todo' }, { done: false, name: 'Second Todo' }] ,
+                givenTodoStore({
+                    todos: [{ done: false, name: 'First Todo' }, { done: false, name: 'Second Todo' }],
                     nullableNumber: null
                 });
 
@@ -114,7 +121,7 @@ describe('store', () => {
             });
 
             it('returns full array when is as last key', () => {
-                givenTodoStore({ 
+                givenTodoStore({
                     todos: [{ done: false, name: 'First Todo' }],
                     nullableNumber: null
                 });
@@ -141,22 +148,28 @@ describe('store', () => {
         describe('with booting', () => {
             const rootCursorTestFixture: s.ICursor<IStateTestFixture> = {
                 key: ''
-            }
+            };
 
             beforeEach(() => {
                 s.bootstrap({ key: null }, true);
             });
 
-            it('creates empty object if cursor has not existing key', () => {
+            it('throws if cursor has not existing key', () => {
                 const cursor = { key: 'invalid' };
-                s.setState(cursor, {});
+                expect(() => s.setState(cursor, {}))
+                    .toThrow();
+            });
+
+            it('creates empty object if cursor has not existing key if told to', () => {
+                const cursor = { key: 'invalid' };
+                s.setState(cursor, {}, true);
 
                 expect(s.getState(s.rootCursor)).toEqual({ key: null, 'invalid': {} });
             });
 
-            it('creates neseted empty objects if cursor has not existing key', () => {
+            it('creates neseted empty objects if cursor has not existing key if told to', () => {
                 const cursor = { key: 'not.existing.key' };
-                s.setState(cursor, {});
+                s.setState(cursor, {}, true);
 
                 expect(s.getState(s.rootCursor)).toEqual({ key: null, 'not': { 'existing': { key: {} } } });
             });
@@ -215,6 +228,15 @@ describe('store', () => {
                 expect(newState.some).not.toBe(initState.some);
                 expect(newState.some.nested).not.toBe(initState.some.nested);
             });
+
+            it('can replace undefined with correct cursor', () => {
+                givenStore({ some: { nested: { state: 'value' } } });
+
+                s.setState({ key: 'some.nested.optional', isUndefinable: true }, 'newValue');
+
+                const newState = s.getState(rootCursorTestFixture);
+                expect(newState.some.nested.optional).toBe('newValue');
+            });
         });
 
         describe('with booting and dynamic/array cursor', () => {
@@ -223,7 +245,7 @@ describe('store', () => {
             });
 
             it('sets nested state into array on specified index', () => {
-                givenTodoStore({ 
+                givenTodoStore({
                     todos: [{ done: false, name: 'First Todo' }, { done: false, name: 'Second Todo' }],
                     nullableNumber: null
                 });
@@ -234,7 +256,7 @@ describe('store', () => {
             });
 
             it('sets new state into array on specified index', () => {
-                givenTodoStore({ 
+                givenTodoStore({
                     todos: [{ done: false, name: 'First Todo' }],
                     nullableNumber: null
                 });
@@ -246,7 +268,7 @@ describe('store', () => {
 
             it('sets new instance of array when nested item has been changed', () => {
                 const storedTodos = [{ done: false, name: 'First Todo' }, { done: false, name: 'Second Todo' }];
-                givenTodoStore({ 
+                givenTodoStore({
                     todos: storedTodos,
                     nullableNumber: null
                 });
@@ -257,7 +279,7 @@ describe('store', () => {
             });
 
             it('sets full array', () => {
-                givenTodoStore({ 
+                givenTodoStore({
                     todos: [{ done: false, name: 'First Todo' }],
                     nullableNumber: null
                 });
@@ -292,7 +314,7 @@ describe('store', () => {
             });
 
             it('write null to state', () => {
-                s.setState(s.rootCursor, <tds.ITodosState>{ 
+                s.setState(s.rootCursor, <tds.ITodosState>{
                     todos: [{ done: false, name: 'First Todo' }],
                     nullableNumber: 10
                 });
@@ -308,7 +330,6 @@ describe('store', () => {
         s.setState(s.rootCursor, state);
     }
 
-
     function resetStore(withFreezing: boolean = false) {
         s.bootstrap(null, withFreezing);
     }
@@ -318,6 +339,7 @@ interface IStateTestFixture extends s.IState {
     some: {
         nested: {
             state: string;
+            optional?: string;
         }
-    }
+    };
 }
