@@ -21,13 +21,13 @@
         "noUnusedParameters": true,
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": true,
-        "strictNullChecks": true,
-        "jsx": "react",
-        "reactNamespace": "b"
+        "strictNullChecks": true
     },
     "filesGlob": [],
-    "files": [],
     "include": [
         "**/*"
+    ],
+    "files": [
+        "d:/dev/dev-github/bobril-build/typings/jasmine/jasmine.d.ts"
     ]
 }

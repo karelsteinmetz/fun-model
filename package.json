@@ -1,6 +1,6 @@
 {
   "name": "fun-model",
-  "version": "5.0.1",
+  "version": "6.0.0",
   "description": "fun-model is pure functional implementation of FLUX architecture.",
   "main": "./index.js",
   "typescript": {
@@ -12,6 +12,18 @@
     "type": "git",
     "url": "https://github.com/karelsteinmetz/fun-model.git"
   },
+  "bobril": {
+    "compilerOptions": {
+      "declaration": true,
+      "noImplicitAny": true,
+      "noImplicitThis": true,
+      "noUnusedLocals": true,
+      "noUnusedParameters": true,
+      "noImplicitReturns": true,
+      "noFallthroughCasesInSwitch": true,
+      "strictNullChecks": true
+    }
+  },
   "keywords": [
     "flux"
   ],
@@ -19,7 +31,6 @@
     "name": "Karel Steinmetz",
     "email": "karel.steinmetz@gmail.com"
   },
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "license": "MIT"
 }

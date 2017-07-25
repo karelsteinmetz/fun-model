@@ -26,15 +26,28 @@ export type IParamLessActionHandler<TState extends s.IState | null> = (state: TS
 
 type IInternalActionHandler<TState extends s.IState | null> = (state: TState) => TState;
 
-function defaultHandler<TValue>(_oldValue: TValue, newValue: TValue) { return newValue; }
+const renderCallbackMustBeSetBefore = 'Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).';
 
-export const createAction = <TState extends s.IState | null, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, handler: IActionHandler<TState, TParams> = defaultHandler)
+export const createAction = <TState extends s.IState | null, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, handler: IActionHandler<TState, TParams>)
     : IAction<TParams> => {
     return <IAction<TParams>>((params: TParams): void => {
         if (stateChanged === null)
-            throw 'Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).';
+            throw renderCallbackMustBeSetBefore;
 
         if (changeStateWithQueue(unifyCursor<TState, TParams>(cursor, params), (state) => handler(state, params))) {
+            stateChanged();
+            d.log('Rendering invoked...');
+        }
+    });
+};
+
+export const createReplaceAction = <TState extends s.IState | null>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TState>)
+    : IAction<TState> => {
+    return <IAction<TState>>((params: TState): void => {
+        if (stateChanged === null)
+            throw renderCallbackMustBeSetBefore;
+
+        if (changeStateWithQueue(unifyCursor<TState, TState>(cursor, params), (_state) => params)) {
             stateChanged();
             d.log('Rendering invoked...');
         }
@@ -45,7 +58,7 @@ export const createParamLessAction = <TState extends s.IState | null>(cursor: s.
     : IParamLessAction => {
     return <IParamLessAction>((): void => {
         if (stateChanged === null)
-            throw 'Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).';
+            throw renderCallbackMustBeSetBefore;
 
         if (changeStateWithQueue(cursor, handler)) {
             stateChanged();
@@ -66,7 +79,8 @@ export interface IPair<TState extends s.IState | null, TParam> {
 export const createActions = <TState extends s.IState | null, TParams>(...pairs: IPair<TState, TParams>[]) => {
     return <IAction<TParams>>((params: TParams) => {
         if (stateChanged === null)
-            throw 'Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).';
+            throw renderCallbackMustBeSetBefore;
+
         let changed = false;
         for (var i in pairs)
             if (pairs.hasOwnProperty(i)) {
@@ -86,7 +100,7 @@ export interface IParamLessPair<TState extends s.IState> {
 export const createParamLessActions = <TState extends s.IState>(...pairs: IParamLessPair<TState>[]) => {
     return <IParamLessAction>(() => {
         if (stateChanged === null)
-            throw 'Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).';
+            throw renderCallbackMustBeSetBefore;
         let changed = false;
         for (var i in pairs)
             if (pairs.hasOwnProperty(i)) {
