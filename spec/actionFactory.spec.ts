@@ -5,10 +5,12 @@ import * as d from '../src/debug';
 
 describe('actionFactory', () => {
     let debugCallback: d.debugCallbackType
+    let renderCallback: () => void;
 
     beforeEach(() => {
         resetStore();
         af.bootstrap(null);
+        renderCallback = jasmine.createSpy('render');
         debugCallback = jasmine.createSpy('debugCallback');
         d.bootstrap(debugCallback);
     });
@@ -22,10 +24,7 @@ describe('actionFactory', () => {
     });
 
     describe('array by cursor factory', () => {
-        let renderCallback: () => void;
-
         beforeEach(() => {
-            renderCallback = jasmine.createSpy('render');
             af.bootstrap(renderCallback);
         });
 
@@ -72,10 +71,8 @@ describe('actionFactory', () => {
 
     describe('createAction', () => {
         describe('when action threw during handling and catching have not been enabled', () => {
-            let renderCallback: () => void;
             let throwingAction: af.IParamLessAction;
             beforeEach(() => {
-                renderCallback = jasmine.createSpy('render');
                 af.bootstrap(renderCallback, false);
                 throwingAction = af.createParamLessAction(NestedCursorTestFixture, () => {
                     throw 'MyDummyException';
@@ -88,10 +85,8 @@ describe('actionFactory', () => {
         });
 
         describe('when action threw during handling and catching have been enabled', () => {
-            let renderCallback: () => void;
             let throwingAction: af.IParamLessAction;
             beforeEach(() => {
-                renderCallback = jasmine.createSpy('render');
                 af.bootstrap(renderCallback, true);
                 throwingAction = af.createParamLessAction(NestedCursorTestFixture, () => {
                     throw 'MyDummyException';
@@ -202,6 +197,26 @@ describe('actionFactory', () => {
         });
     });
 
+    describe('createReplaceAction', () => {
+        beforeEach(() => {
+            af.bootstrap(renderCallback, false);
+        });
+        it('replaces if the state has not been same', () => {
+            givenStore(aState('nestedStateValue'));
+            const testAction = af.createReplaceAction<string>(NestedStateCursorTestFixture);
+
+            testAction('newNestedStateValue');
+            expect(renderCallback).toHaveBeenCalled();
+        });
+        it('does not replace the same state', () => {
+            givenStore(aState('nestedStateValue'));
+            const testAction = af.createReplaceAction<string>(NestedStateCursorTestFixture);
+
+            testAction('nestedStateValue');
+            expect(renderCallback).not.toHaveBeenCalled();
+        });
+    })
+
     describe('createActions', () => {
         describe('when renderCallback has not been set', () => {
             it('throws if key does not exist', () => {
@@ -253,17 +268,6 @@ describe('actionFactory', () => {
                     });
                 testAction();
 
-                expect(renderCallback).toHaveBeenCalled();
-            });
-
-            it('uses action as simple setter when no handler defined', () => {
-                givenStore(aState('nestedStateValue'));
-                const testAction = af.createAction<string, string>(NestedStateCursorTestFixture);
-
-                testAction('nestedStateValue');
-                expect(renderCallback).not.toHaveBeenCalled();
-
-                testAction('newNestedStateValue');
                 expect(renderCallback).toHaveBeenCalled();
             });
         });
