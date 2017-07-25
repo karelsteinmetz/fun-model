@@ -201,19 +201,36 @@ describe('actionFactory', () => {
         beforeEach(() => {
             af.bootstrap(renderCallback, false);
         });
+        it('calls render callback if the state has not been same', () => {
+            givenStore(aState('nestedStateValue'));
+            const testAction = af.createReplaceAction<string>(NestedStateCursorTestFixture);
+
+            testAction('newNestedStateValue');
+
+            expect(renderCallback).toHaveBeenCalled();
+        });
+        it('does not call render callback for the same state', () => {
+            givenStore(aState('nestedStateValue'));
+            const testAction = af.createReplaceAction<string>(NestedStateCursorTestFixture);
+
+            testAction('nestedStateValue');
+            expect(renderCallback).not.toHaveBeenCalled();
+        });
         it('replaces if the state has not been same', () => {
             givenStore(aState('nestedStateValue'));
             const testAction = af.createReplaceAction<string>(NestedStateCursorTestFixture);
 
             testAction('newNestedStateValue');
-            expect(renderCallback).toHaveBeenCalled();
+
+            expect(s.getState(NestedStateCursorTestFixture)).toBe('newNestedStateValue');
         });
         it('does not replace the same state', () => {
             givenStore(aState('nestedStateValue'));
             const testAction = af.createReplaceAction<string>(NestedStateCursorTestFixture);
 
             testAction('nestedStateValue');
-            expect(renderCallback).not.toHaveBeenCalled();
+
+            expect(s.getState(NestedStateCursorTestFixture)).toBe('nestedStateValue');
         });
     })
 
