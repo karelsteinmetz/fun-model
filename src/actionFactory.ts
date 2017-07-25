@@ -20,17 +20,17 @@ export interface IParamLessAction {
     (): void;
 }
 
-export type IActionHandler<TState extends s.IState | null, TParams> = (state: TState, t: TParams) => TState;
+export type IActionHandler<TState, TParams> = (state: TState, t: TParams) => TState;
 
-export type IParamLessActionHandler<TState extends s.IState | null> = (state: TState) => TState;
+export type IParamLessActionHandler<TState> = (state: TState) => TState;
 
-type IInternalActionHandler<TState extends s.IState | null> = (state: TState) => TState;
+type IInternalActionHandler<TState> = (state: TState) => TState;
 
 const renderCallbackMustBeSetBefore = 'Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).';
 
-export const createAction = <TState extends s.IState | null, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, handler: IActionHandler<TState, TParams>)
+export const createAction = <TState, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, handler: IActionHandler<TState, TParams>)
     : IAction<TParams> => {
-    return <IAction<TParams>>((params: TParams): void => {
+    return (params: TParams): void => {
         if (stateChanged === null)
             throw renderCallbackMustBeSetBefore;
 
@@ -38,25 +38,17 @@ export const createAction = <TState extends s.IState | null, TParams>(cursor: s.
             stateChanged();
             d.log('Rendering invoked...');
         }
-    });
+    };
 };
 
-export const createReplaceAction = <TState extends s.IState | null>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TState>)
+export const createReplaceAction = <TState>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TState>)
     : IAction<TState> => {
-    return <IAction<TState>>((params: TState): void => {
-        if (stateChanged === null)
-            throw renderCallbackMustBeSetBefore;
-
-        if (changeStateWithQueue(unifyCursor<TState, TState>(cursor, params), (_state) => params)) {
-            stateChanged();
-            d.log('Rendering invoked...');
-        }
-    });
+    return createAction(cursor, (_state, params) => params);
 };
 
-export const createParamLessAction = <TState extends s.IState | null>(cursor: s.ICursor<TState>, handler: IParamLessActionHandler<TState>)
+export const createParamLessAction = <TState>(cursor: s.ICursor<TState>, handler: IParamLessActionHandler<TState>)
     : IParamLessAction => {
-    return <IParamLessAction>((): void => {
+    return (): void => {
         if (stateChanged === null)
             throw renderCallbackMustBeSetBefore;
 
@@ -64,20 +56,20 @@ export const createParamLessAction = <TState extends s.IState | null>(cursor: s.
             stateChanged();
             d.log('Rendering invoked...');
         }
-    });
+    };
 };
 
-function unifyCursor<TState extends s.IState | null, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, params: TParams): s.ICursor<TState> {
+function unifyCursor<TState, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, params: TParams): s.ICursor<TState> {
     return (<s.ICursorFactory<TState, TParams>>cursor).create instanceof Function ? (<s.ICursorFactory<TState, TParams>>cursor).create(params) : <s.ICursor<TState>>cursor;
 }
 
-export interface IPair<TState extends s.IState | null, TParam> {
+export interface IPair<TState, TParam> {
     cursor: s.ICursor<TState>;
     handler: (state: TState, t: TParam) => TState
 }
 
-export const createActions = <TState extends s.IState | null, TParams>(...pairs: IPair<TState, TParams>[]) => {
-    return <IAction<TParams>>((params: TParams) => {
+export const createActions = <TState, TParams>(...pairs: IPair<TState, TParams>[]): IAction<TParams> => {
+    return (params: TParams) => {
         if (stateChanged === null)
             throw renderCallbackMustBeSetBefore;
 
@@ -89,16 +81,16 @@ export const createActions = <TState extends s.IState | null, TParams>(...pairs:
                     changed = true;
             }
         changed && stateChanged();
-    });
+    };
 };
 
-export interface IParamLessPair<TState extends s.IState> {
+export interface IParamLessPair<TState> {
     cursor: s.ICursor<TState>;
     handler: (state: TState) => TState
 }
 
-export const createParamLessActions = <TState extends s.IState>(...pairs: IParamLessPair<TState>[]) => {
-    return <IParamLessAction>(() => {
+export const createParamLessActions = <TState>(...pairs: IParamLessPair<TState>[]): IParamLessAction => {
+    return () => {
         if (stateChanged === null)
             throw renderCallbackMustBeSetBefore;
         let changed = false;
@@ -109,16 +101,16 @@ export const createParamLessActions = <TState extends s.IState>(...pairs: IParam
                     changed = true;
             }
         changed && stateChanged();
-    });
+    };
 };
 
-interface IQueuedHandling<TState extends s.IState | null> {
+interface IQueuedHandling<TState> {
     cursor: s.ICursor<TState>;
     handler: IInternalActionHandler<TState>;
 }
 
-let queueOfHandlers: IQueuedHandling<s.IState | null>[] = [];
-function changeStateWithQueue<TState extends s.IState | null>(cursor: s.ICursor<TState>, handler: IInternalActionHandler<TState>)
+let queueOfHandlers: IQueuedHandling<any>[] = [];
+function changeStateWithQueue<TState>(cursor: s.ICursor<TState>, handler: IInternalActionHandler<TState>)
     : boolean {
     queueOfHandlers.push({ cursor, handler });
     if (queueOfHandlers.length > 1)
@@ -141,7 +133,7 @@ function changeStateWithQueue<TState extends s.IState | null>(cursor: s.ICursor<
     return isStateChanged;
 }
 
-function changeState<TState extends s.IState | null>(cursor: s.ICursor<TState>, handler: IInternalActionHandler<TState>)
+function changeState<TState>(cursor: s.ICursor<TState>, handler: IInternalActionHandler<TState>)
     : boolean {
     let oldState = s.getState(cursor);
     let newState = handler(oldState);
