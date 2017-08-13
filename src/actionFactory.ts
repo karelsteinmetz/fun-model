@@ -28,39 +28,41 @@ type IInternalActionHandler<TState> = (state: TState) => TState;
 
 const renderCallbackMustBeSetBefore = 'Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).';
 
-export const createAction = <TState, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, handler: IActionHandler<TState, TParams>)
+export const createAction = <TState, TParams>(cursor: s.CursorType<TState> | s.ICursorFactory<TState, TParams>, handler: IActionHandler<TState, TParams>)
     : IAction<TParams> => {
     return (params: TParams): void => {
         if (stateChanged === null)
             throw renderCallbackMustBeSetBefore;
-
-        if (changeStateWithQueue(unifyCursor<TState, TParams>(cursor, params), (state) => handler(state, params))) {
+        
+        if (changeStateWithQueue(unifyCursor(cursor, params), (state) => handler(state, params))) {
             stateChanged();
             d.log('Rendering invoked...');
         }
     };
 };
 
-export const createReplaceAction = <TState>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TState>)
+export const createReplaceAction = <TState>(cursor: s.CursorType<TState> | s.ICursorFactory<TState, TState>)
     : IAction<TState> => {
     return createAction(cursor, (_state, params) => params);
 };
 
-export const createParamLessAction = <TState>(cursor: s.ICursor<TState>, handler: IParamLessActionHandler<TState>)
+export const createParamLessAction = <TState>(cursor: s.CursorType<TState> | s.ICursorFactory<TState, TState>, handler: IParamLessActionHandler<TState>)
     : IParamLessAction => {
     return (): void => {
         if (stateChanged === null)
             throw renderCallbackMustBeSetBefore;
 
-        if (changeStateWithQueue(cursor, handler)) {
+        if (changeStateWithQueue(unifyCursor(cursor, null), handler)) {
             stateChanged();
             d.log('Rendering invoked...');
         }
     };
 };
 
-function unifyCursor<TState, TParams>(cursor: s.ICursor<TState> | s.ICursorFactory<TState, TParams>, params: TParams): s.ICursor<TState> {
-    return (<s.ICursorFactory<TState, TParams>>cursor).create instanceof Function ? (<s.ICursorFactory<TState, TParams>>cursor).create(params) : <s.ICursor<TState>>cursor;
+function unifyCursor<TState, TParams>(cursor: s.CursorType<TState> | s.ICursorFactory<TState, TParams>, params: TParams): s.ICursor<TState> {
+    return (<any>cursor).create instanceof Function
+        ? <s.ICursor<TState>>(<any>cursor).create(params)
+        : <s.ICursor<TState>>(s.isCursorFunction(<s.CursorType<TState>>cursor) ? (<() => s.ICursor<TState>>cursor)() : cursor);
 }
 
 export interface IPair<TState, TParam> {

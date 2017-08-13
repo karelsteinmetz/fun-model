@@ -4,6 +4,18 @@ import * as d from './debug';
 export interface IState {
 }
 
+export type CursorType<TState extends IState> = (() => ICursor<TState>) | ICursor<TState>;
+export function createNestedCursor<TState extends IState, TNestedState extends IState>(cursor: CursorType<TState>, nestedStateKey: string): CursorType<TNestedState> {
+    if (isCursorFunction(cursor))
+        return () => { return { key: cursor().key + stateSeparator + nestedStateKey } }
+    else
+        return { key: cursor.key + stateSeparator + nestedStateKey };
+}
+
+export function isCursorFunction<TState extends IState>(cursor: CursorType<TState>): cursor is () => ICursor<TState> {
+    return typeof cursor == "function";
+}
+
 export interface ICursor<TState> {
     key: string;
     isUndefinable?: boolean;
@@ -29,7 +41,8 @@ export const bootstrap = (defaultState: IState | null, withStateFreezing: boolea
     freezing = withStateFreezing;
 };
 
-export const isExistingCursor = <TState>(cursor: ICursor<TState>): boolean => {
+export const isExistingCursor = <TState>(cursor: CursorType<TState>): boolean => {
+    cursor = isCursorFunction(cursor) ? cursor() : cursor;
     const hasExistingInnerStateInArray = (innerState: IState[], path: string[]): boolean => {
         const index = Number(path.shift());
         return index < innerState.length
@@ -58,29 +71,31 @@ export const isExistingCursor = <TState>(cursor: ICursor<TState>): boolean => {
         : hasExistingInnerState(state, cursor.key.split(stateSeparator));
 }
 
-export const getState = <TState>(cursor: ICursor<TState>): TState => {
+export const getState = <TState>(cursor: CursorType<TState>): TState => {
+    const cursorValue = isCursorFunction(cursor) ? cursor() : cursor;
     const getInnerState = (innerState: IState, path: string[]): IState => {
         if (path.length === 0)
             return innerState;
         const subPath = path.shift();
         if (!subPath)
             return innerState;
-        checkSubstate(innerState, subPath, path, cursor);
+        checkSubstate(innerState, subPath, path, cursorValue);
         const prop = (<any>innerState)[subPath];
         return Array.isArray(prop) && path.length > 0
             ? getInnerState(prop[Number(path.shift())], path)
             : getInnerState(prop, path);
     };
 
-    if (!isSetDefaultState(state) || !isValidCursorKey(cursor))
+    if (!isSetDefaultState(state) || !isValidCursorKey(cursorValue))
         throw 'Invalid operation.';
 
-    return <TState>(cursor.key === rootStateKey
+    return <TState>(cursorValue.key === rootStateKey
         ? state
-        : getInnerState(state, cursor.key.split(stateSeparator)));
+        : getInnerState(state, cursorValue.key.split(stateSeparator)));
 };
 
-export const setState = <TState>(cursor: ICursor<TState>, updatedState: TState, canCreateObjectsOnPath = false) => {
+export const setState = <TState>(cursor: CursorType<TState>, updatedState: TState, canCreateObjectsOnPath = false) => {
+    const cursorValue = isCursorFunction(cursor) ? cursor() : cursor;
     const setInnerState = <TInnerState>(innerState: TInnerState, path: string[]): TInnerState => {
         if (path.length === 0)
             return <any>updatedState;
@@ -91,7 +106,7 @@ export const setState = <TState>(cursor: ICursor<TState>, updatedState: TState, 
         if (canCreateObjectsOnPath)
             createSubstate(innerState, subPath);
         else
-            checkSubstate(innerState, subPath, path, cursor);
+            checkSubstate(innerState, subPath, path, cursorValue);
         const prop = (<any>innerState)[subPath];
         let newSubState: Object | Array<IState> | null = null;
         if (Array.isArray(prop) && path.length > 0) {
@@ -110,13 +125,13 @@ export const setState = <TState>(cursor: ICursor<TState>, updatedState: TState, 
         return newState;
     };
 
-    if (!isSetDefaultState(state) || !isValidCursorKey(cursor))
+    if (!isSetDefaultState(state) || !isValidCursorKey(cursorValue))
         throw 'Invalid operation.';
 
     state =
-        cursor.key === rootStateKey
+        cursorValue.key === rootStateKey
             ? updatedState
-            : setInnerState(state, cursor.key.split(stateSeparator));
+            : setInnerState(state, cursorValue.key.split(stateSeparator));
     if (h.isFunction(freezing) ? freezing() : freezing)
         h.deepFreeze(state);
     d.log('Current state:', state);

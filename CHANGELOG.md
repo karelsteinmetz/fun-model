@@ -1,5 +1,14 @@
 CHANGELOG
 ===
+6.2.0
+--
+
+New Features
+-
+
+Defined CursorType for supporting of functional cursors.
+CursorType<TState extends IState> = (() => ICursor<TState>) | ICursor<TState>
+
 5.0.0
 --
 
