@@ -12,6 +12,10 @@ export function createNestedCursor<TState extends IState, TNestedState extends I
         return { key: cursor.key + stateSeparator + nestedStateKey };
 }
 
+export function createNestedCursorFactory<TRootState extends IState, TNestedState extends IState>(key: string) {
+    return (cursor: CursorType<TRootState>) => createNestedCursor<TRootState, TNestedState>(cursor, key);
+}
+
 export function isCursorFunction<TState extends IState>(cursor: CursorType<TState>): cursor is () => ICursor<TState> {
     return typeof cursor == "function";
 }

@@ -1,5 +1,13 @@
 CHANGELOG
 ===
+6.3.0
+--
+
+New Features
+-
+
+Created helper for nested cursor factories.
+
 6.2.0
 --
 
