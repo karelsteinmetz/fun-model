@@ -7,10 +7,13 @@ export function shallowCopy(source: any, callback?: (target: any) => void | any)
         const result = callback ? callback(source) : undefined;
         return result || source;
     }
-    return objectShallowCopy(source, callback);
+    if (typeof source === "object") {
+        return objectShallowCopy(source, callback);
+    }
+    return source;
 }
 
-export function objectShallowCopy<T>(source: T, callback: (target: T) => void | T = (_t: T) => { }): T {
+export function objectShallowCopy<T extends Object>(source: T, callback: (target: T) => void | T = (_t: T) => { }): T {
     const target = <T>{};
     for (var property in source)
         if (source.hasOwnProperty(property))

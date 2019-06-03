@@ -115,7 +115,7 @@ describe('store', () => {
                     nullableNumber: null
                 });
 
-                const state = s.getState<tds.ITodosState>({ key: 'todos.1.name' });
+                const state = s.getState<string>({ key: 'todos.1.name' });
 
                 expect(state).toBe('Second Todo');
             });
