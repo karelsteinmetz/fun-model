@@ -1,3 +1,4 @@
+import { debug } from "./debug";
 
 export function shallowCopy<T>(source: T, callback?: (target: T) => void | T): T;
 export function shallowCopy<T>(source: T[], callback?: (target: T[]) => void | T[]): T[];
@@ -10,7 +11,12 @@ export function shallowCopy(source: any, callback?: (target: any) => void | any)
     if (typeof source === "object") {
         return objectShallowCopy(source, callback);
     }
-    return source;
+
+    if (debug) {
+        debug("Don't call shallow copy with primitive.");
+    }
+    const result = callback && callback(source);
+    return result || source;
 }
 
 export function objectShallowCopy<T extends Object>(source: T, callback: (target: T) => void | T = (_t: T) => { }): T {
