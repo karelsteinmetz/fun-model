@@ -1,10 +1,8 @@
 import { debug } from "./debug";
 
-export function shallowCopy<T>(source: T, callback?: (target: T) => void | T): T;
-export function shallowCopy<T>(source: T[], callback?: (target: T[]) => void | T[]): T[];
-export function shallowCopy(source: any, callback?: (target: any) => void | any): any {
+export function shallowCopy<T>(source: T, callback?: (target: T) => void | T): T {
     if (source instanceof Array) {
-        source = [...source];
+        source = [...source] as unknown as T;
         const result = callback ? callback(source) : undefined;
         return result || source;
     }
