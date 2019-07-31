@@ -115,6 +115,12 @@ describe('helpers', () => {
 
                 expect(returnValue).toBe("test");
             });
+
+            it("respects returned value from cb", () => {
+                const returnValue = h.shallowCopy("test", (_original: string) => "changed value");
+
+                expect(returnValue).toBe("changed value");
+            });
         });
     });
 
