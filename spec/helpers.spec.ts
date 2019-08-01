@@ -1,4 +1,5 @@
 import * as h from '../src/helpers';
+import { bootstrap } from '../src/debug';
 
 describe('helpers', () => {
     describe('shallowCopy', () => {
@@ -92,6 +93,34 @@ describe('helpers', () => {
                     }
                 }
             })
+        });
+
+        describe('on primitive', () => {
+            it('calls callback', () => {
+                const callback = jasmine.createSpy('callback');
+                h.shallowCopy('test', callback);
+
+                expect(callback).toHaveBeenCalledWith('test');
+            });
+
+            it('calls debug because of wrong usage', () => {
+                const debug = jasmine.createSpy('debug');
+                bootstrap(debug);
+                h.shallowCopy('test');
+                expect(debug).toHaveBeenCalled();
+            });
+
+            it('returns value when no callback provided', () => {
+                const returnValue = h.shallowCopy('test');
+
+                expect(returnValue).toBe('test');
+            });
+
+            it('respects returned value', () => {
+                const returnValue = h.shallowCopy('test', (_original: string) => 'changed value');
+
+                expect(returnValue).toBe('changed value');
+            });
         });
     });
 
