@@ -1,5 +1,5 @@
 import * as h from '../src/helpers';
-import { bootstrap } from "../src/debug";
+import { bootstrap } from '../src/debug';
 
 describe('helpers', () => {
     describe('shallowCopy', () => {
@@ -95,31 +95,31 @@ describe('helpers', () => {
             })
         });
 
-        describe('primitive', () => {
-            it("call callback when called with primitive", () => {
-                const callback = jasmine.createSpy("callback");
-                h.shallowCopy("test", callback);
+        describe('on primitive', () => {
+            it('calls callback', () => {
+                const callback = jasmine.createSpy('callback');
+                h.shallowCopy('test', callback);
 
-                expect(callback).toHaveBeenCalledWith("test");
+                expect(callback).toHaveBeenCalledWith('test');
             });
 
-            it("call debug because of wrong usage", () => {
-                const debug = jasmine.createSpy("debug");
+            it('calls debug because of wrong usage', () => {
+                const debug = jasmine.createSpy('debug');
                 bootstrap(debug);
-                h.shallowCopy("test");
+                h.shallowCopy('test');
                 expect(debug).toHaveBeenCalled();
             });
 
-            it("return value when no callback provided", () => {
-                const returnValue = h.shallowCopy("test");
+            it('returns value when no callback provided', () => {
+                const returnValue = h.shallowCopy('test');
 
-                expect(returnValue).toBe("test");
+                expect(returnValue).toBe('test');
             });
 
-            it("respects returned value from cb", () => {
-                const returnValue = h.shallowCopy("test", (_original: string) => "changed value");
+            it('respects returned value', () => {
+                const returnValue = h.shallowCopy('test', (_original: string) => 'changed value');
 
-                expect(returnValue).toBe("changed value");
+                expect(returnValue).toBe('changed value');
             });
         });
     });
