@@ -11,7 +11,7 @@ export function shallowCopy<T>(source: T, callback?: (target: T) => void | T): T
     }
 
     if (debug) {
-        debug("Don't call shallow copy with primitive.");
+        debug("Shallow copy should not be used for primitive types.");
     }
     const result = callback && callback(source);
     return result || source;

@@ -1,5 +1,13 @@
 CHANGELOG
 ===
+6.4.0
+--
+
+Fixed
+-
+
+Shallow copy backward compatibility for primitive types. Callback is used again also for primitive types.
+
 6.3.0
 --
 

@@ -1,31 +1,38 @@
 {
-    "compileOnSave": false,
-    "compilerOptions": {
-        "target": "es5",
-        "declaration": true,
-        "noImplicitAny": true,
-        "removeComments": false,
-        "moduleResolution": "node",
-        "noLib": false,
-        "module": "commonjs",
-        "experimentalDecorators": true,
-        "lib": [
-            "es5",
-            "dom",
-            "es2015.core",
-            "es2015.promise"
-        ],
-        "preserveConstEnums": false,
-        "noImplicitThis": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": true,
-        "strictNullChecks": true
-    },
-    "filesGlob": [],
-    "include": [
-        "**/*"
+  "compilerOptions": {
+    "allowJs": false,
+    "checkJs": false,
+    "declaration": true,
+    "experimentalDecorators": true,
+    "jsx": "react",
+    "lib": [
+      "es5",
+      "dom",
+      "es2015.core",
+      "es2015.promise",
+      "es2015.iterable",
+      "es2015.collection"
     ],
-    "files": []
+    "module": "commonjs",
+    "noEmitHelpers": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "preserveConstEnums": false,
+    "reactNamespace": "React",
+    "removeComments": false,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "sourceMap": true,
+    "strictNullChecks": true,
+    "target": "es5",
+    "resolveJsonModule": true
+  },
+  "files": [],
+  "include": [
+    "**/*"
+  ]
 }
