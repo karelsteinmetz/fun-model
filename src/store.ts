@@ -68,7 +68,7 @@ export const isExistingCursor = <TState>(cursor: CursorType<TState>): boolean =>
     };
 
     if (!isSetDefaultState(state) || !isValidCursorKey(cursor))
-        throw 'Invalid operation.';
+        throw new Error('Invalid operation.');
 
     return cursor.key === rootStateKey
         ? true
@@ -91,7 +91,7 @@ export const getState = <TState>(cursor: CursorType<TState>): TState => {
     };
 
     if (!isSetDefaultState(state) || !isValidCursorKey(cursorValue))
-        throw 'Invalid operation.';
+        throw new Error('Invalid operation.');
 
     return <TState>(cursorValue.key === rootStateKey
         ? state
@@ -130,7 +130,7 @@ export const setState = <TState>(cursor: CursorType<TState>, updatedState: TStat
     };
 
     if (!isSetDefaultState(state) || !isValidCursorKey(cursorValue))
-        throw 'Invalid operation.';
+        throw new Error('Invalid operation.');
 
     state =
         cursorValue.key === rootStateKey
@@ -145,7 +145,7 @@ function checkSubstate<TCurrentState, TTargetState>(s: TCurrentState, subPath: s
     if (remainingPath.length === 0 && cursor.isUndefinable)
         return;
     if ((<any>s)[subPath] === undefined)
-        throw `State for cursor key (${cursor.key}) does not exist.`;
+        throw new Error(`State for cursor key (${cursor.key}) does not exist.`);
 }
 
 function createSubstate<TState>(s: TState, subPath: string) {
@@ -155,12 +155,12 @@ function createSubstate<TState>(s: TState, subPath: string) {
 
 function isSetDefaultState<T>(state: T | null): state is T {
     if (state === null)
-        throw 'Default state must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).';
+        throw new Error('Default state must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).');
     return true;
 }
 
 function isValidCursorKey<TState>(cursor: ICursor<TState>): boolean {
     if (cursor.key === null)
-        throw 'Cursor key cannot be null.';
+        throw new Error( 'Cursor key cannot be null.');
     return true;
 }

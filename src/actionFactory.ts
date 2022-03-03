@@ -32,8 +32,8 @@ export const createAction = <TState, TParams>(cursor: s.CursorType<TState> | s.I
     : IAction<TParams> => {
     return (params: TParams): void => {
         if (stateChanged === null)
-            throw renderCallbackMustBeSetBefore;
-        
+            throw new Error(renderCallbackMustBeSetBefore);
+
         if (changeStateWithQueue(unifyCursor(cursor, params), (state) => handler(state, params))) {
             stateChanged();
             d.log('Rendering invoked...');
@@ -50,7 +50,7 @@ export const createParamLessAction = <TState>(cursor: s.CursorType<TState> | s.I
     : IParamLessAction => {
     return (): void => {
         if (stateChanged === null)
-            throw renderCallbackMustBeSetBefore;
+            throw new Error(renderCallbackMustBeSetBefore);
 
         if (changeStateWithQueue(unifyCursor(cursor, null), handler)) {
             stateChanged();
@@ -73,7 +73,7 @@ export interface IPair<TState, TParam> {
 export const createActions = <TState, TParams>(...pairs: IPair<TState, TParams>[]): IAction<TParams> => {
     return (params: TParams) => {
         if (stateChanged === null)
-            throw renderCallbackMustBeSetBefore;
+            throw new Error(renderCallbackMustBeSetBefore);
 
         let changed = false;
         for (var i in pairs)
@@ -94,7 +94,7 @@ export interface IParamLessPair<TState> {
 export const createParamLessActions = <TState>(...pairs: IParamLessPair<TState>[]): IParamLessAction => {
     return () => {
         if (stateChanged === null)
-            throw renderCallbackMustBeSetBefore;
+            throw new Error(renderCallbackMustBeSetBefore);
         let changed = false;
         for (var i in pairs)
             if (pairs.hasOwnProperty(i)) {
