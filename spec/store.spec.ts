@@ -65,7 +65,7 @@ describe('store', () => {
         describe('without booting', () => {
             it('throws if key does not exist', () => {
                 expect(() => s.getState<s.IState>(s.rootCursor))
-                    .toThrow('Default state must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).');
+                    .toThrowError('Default state must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).');
             });
         });
 
@@ -92,7 +92,7 @@ describe('store', () => {
 
             it('throws if key does not exist', () => {
                 expect(() => s.getState<s.IState>({ key: 'notExistingKey' }))
-                    .toThrow('State for cursor key (notExistingKey) does not exist.');
+                    .toThrowError('State for cursor key (notExistingKey) does not exist.');
             });
 
             it('returns udefined if cursor allows that', () => {
@@ -141,7 +141,7 @@ describe('store', () => {
         describe('without booting', () => {
             it('throws if key does not exist', () => {
                 expect(() => s.setState(s.rootCursor, {}))
-                    .toThrow('Default state must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).');
+                    .toThrowError('Default state must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).');
             });
         });
 
@@ -157,7 +157,7 @@ describe('store', () => {
             it('throws if cursor has not existing key', () => {
                 const cursor = { key: 'invalid' };
                 expect(() => s.setState(cursor, {}))
-                    .toThrow();
+                    .toThrowError();
             });
 
             it('creates empty object if cursor has not existing key if told to', () => {

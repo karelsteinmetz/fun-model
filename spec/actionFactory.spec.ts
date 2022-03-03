@@ -114,7 +114,7 @@ describe('actionFactory', () => {
                 expect(() => {
                     let testAction = af.createParamLessAction(NestedCursorTestFixture, () => { return { state: 'new nested state' }; });
                     testAction();
-                }).toThrow('Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).');
+                }).toThrowError('Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).');
             });
         });
 
@@ -243,7 +243,7 @@ describe('actionFactory', () => {
                         handler: (state: INestedState): INestedState => state
                     });
                     testAction();
-                }).toThrow('Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).');
+                }).toThrowError('Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).');
             });
         });
 
