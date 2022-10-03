@@ -8,24 +8,24 @@ export interface ITodosState extends s.IState {
 export default (): ITodosState => {
     return {
         todos: [],
-        nullableNumber: null
-    }
-}
+        nullableNumber: null,
+    };
+};
 
 export interface ITodo {
-    done: boolean
-    name: string
+    done: boolean;
+    name: string;
 }
 
 export interface ITodoParams {
-    todo: ITodo
-    index: number
+    todo: ITodo;
+    index: number;
 }
 
 export const todosCursor: s.ICursor<ITodo[]> = {
-    key: 'todos'
-}
+    key: 'todos',
+};
 
 export const nullableNumberCursor: s.ICursor<number | null> = {
-    key: 'nullableNumber'
-}
+    key: 'nullableNumber',
+};

@@ -10,8 +10,8 @@ describe('helpers', () => {
                 id: 'anId',
                 list: [1, 2, 3],
                 subObject: {
-                    id: 'anSubId'
-                }
+                    id: 'anSubId',
+                },
             };
         });
 
@@ -38,7 +38,7 @@ describe('helpers', () => {
             });
 
             it('sets properties in callback without return', () => {
-                let newState = h.shallowCopy(aState, s => {
+                let newState = h.shallowCopy(aState, (s) => {
                     s.id = 'newId';
                     s.subObject = { id: 'newSubId' };
                 });
@@ -48,18 +48,20 @@ describe('helpers', () => {
             });
 
             it('sets properties in nested shallowCopy', () => {
-                let newState = h.shallowCopy(aState, s => h.shallowCopy(s, a => {
-                    a.id = 'newId';
-                    a.subObject = { id: 'newSubId' };
-                    return a;
-                }));
+                let newState = h.shallowCopy(aState, (s) =>
+                    h.shallowCopy(s, (a) => {
+                        a.id = 'newId';
+                        a.subObject = { id: 'newSubId' };
+                        return a;
+                    })
+                );
 
                 expect(newState.id).toBe('newId');
                 expect(newState.subObject).toEqual({ id: 'newSubId' });
             });
 
             it('sets properties in inline style', () => {
-                let newState = h.shallowCopy(aState, s => {
+                let newState = h.shallowCopy(aState, (s) => {
                     s.id = 'newId';
                     s.subObject = { id: 'newSubId' };
                 });
@@ -73,7 +75,7 @@ describe('helpers', () => {
             let newState: IDummyState;
 
             beforeEach(() => {
-                newState = h.shallowCopy(aState, ns => {
+                newState = h.shallowCopy(aState, (ns) => {
                     ns.list = h.shallowCopy(ns.list);
                 });
             });
@@ -88,11 +90,14 @@ describe('helpers', () => {
 
             it('has all own properties/values', () => {
                 for (let key in newState.list) {
-                    if (newState.list.hasOwnProperty(key) && typeof key !== 'function') {
+                    if (
+                        newState.list.hasOwnProperty(key) &&
+                        typeof key !== 'function'
+                    ) {
                         expect(newState.list[key]).toBe(aState.list[key]);
                     }
                 }
-            })
+            });
         });
 
         describe('on primitive', () => {
@@ -117,7 +122,10 @@ describe('helpers', () => {
             });
 
             it('respects returned value', () => {
-                const returnValue = h.shallowCopy('test', (_original: string) => 'changed value');
+                const returnValue = h.shallowCopy(
+                    'test',
+                    (_original: string) => 'changed value'
+                );
 
                 expect(returnValue).toBe('changed value');
             });
@@ -132,11 +140,11 @@ describe('helpers', () => {
                 id: 'anId',
                 list: [1, 2, 3],
                 subObject: {
-                    id: 'anSubId'
-                }
+                    id: 'anSubId',
+                },
             };
             h.deepFreeze(state);
-        })
+        });
 
         it('freezes root object', () => {
             expect(Object.isFrozen(state)).toBeTruthy();
@@ -149,11 +157,11 @@ describe('helpers', () => {
         it('freezes nested array', () => {
             expect(Object.isFrozen(state.list)).toBeTruthy();
         });
-    })
+    });
 });
 
 interface IDummyState {
-    id: string
-    list: number[]
-    subObject: any
+    id: string;
+    list: number[];
+    subObject: any;
 }

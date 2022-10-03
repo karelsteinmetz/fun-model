@@ -5,7 +5,10 @@ import * as h from './helpers';
 let stateChanged: (() => void) | null = null;
 let exceptionHandling: boolean | (() => boolean);
 
-export const bootstrap = (onStateChanged: (() => void) | null, withExceptionHandling: boolean | (() => boolean) = false) => {
+export const bootstrap = (
+    onStateChanged: (() => void) | null,
+    withExceptionHandling: boolean | (() => boolean) = false
+) => {
     stateChanged = onStateChanged;
     queueOfHandlers = [];
     exceptionHandling = withExceptionHandling;
@@ -20,34 +23,47 @@ export interface IParamLessAction {
     (): void;
 }
 
-export type IActionHandler<TState, TParams> = (state: TState, t: TParams) => TState;
+export type IActionHandler<TState, TParams> = (
+    state: TState,
+    t: TParams
+) => TState;
 
 export type IParamLessActionHandler<TState> = (state: TState) => TState;
 
 type IInternalActionHandler<TState> = (state: TState) => TState;
 
-const renderCallbackMustBeSetBefore = 'Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).';
+const renderCallbackMustBeSetBefore =
+    'Render callback must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).';
 
-export const createAction = <TState, TParams>(cursor: s.CursorType<TState> | s.ICursorFactory<TState, TParams>, handler: IActionHandler<TState, TParams>)
-    : IAction<TParams> => {
+export const createAction = <TState, TParams>(
+    cursor: s.CursorType<TState> | s.ICursorFactory<TState, TParams>,
+    handler: IActionHandler<TState, TParams>
+): IAction<TParams> => {
     return (params: TParams): void => {
         if (stateChanged === null)
             throw new Error(renderCallbackMustBeSetBefore);
 
-        if (changeStateWithQueue(unifyCursor(cursor, params), (state) => handler(state, params))) {
+        if (
+            changeStateWithQueue(unifyCursor(cursor, params), (state) =>
+                handler(state, params)
+            )
+        ) {
             stateChanged();
             d.log('Rendering invoked...');
         }
     };
 };
 
-export const createReplaceAction = <TState>(cursor: s.CursorType<TState> | s.ICursorFactory<TState, TState>)
-    : IAction<TState> => {
+export const createReplaceAction = <TState>(
+    cursor: s.CursorType<TState> | s.ICursorFactory<TState, TState>
+): IAction<TState> => {
     return createAction(cursor, (_state, params) => params);
 };
 
-export const createParamLessAction = <TState>(cursor: s.CursorType<TState> | s.ICursorFactory<TState, TState>, handler: IParamLessActionHandler<TState>)
-    : IParamLessAction => {
+export const createParamLessAction = <TState>(
+    cursor: s.CursorType<TState> | s.ICursorFactory<TState, TState>,
+    handler: IParamLessActionHandler<TState>
+): IParamLessAction => {
     return (): void => {
         if (stateChanged === null)
             throw new Error(renderCallbackMustBeSetBefore);
@@ -59,18 +75,27 @@ export const createParamLessAction = <TState>(cursor: s.CursorType<TState> | s.I
     };
 };
 
-function unifyCursor<TState, TParams>(cursor: s.CursorType<TState> | s.ICursorFactory<TState, TParams>, params: TParams): s.ICursor<TState> {
+function unifyCursor<TState, TParams>(
+    cursor: s.CursorType<TState> | s.ICursorFactory<TState, TParams>,
+    params: TParams
+): s.ICursor<TState> {
     return (<any>cursor).create instanceof Function
         ? <s.ICursor<TState>>(<any>cursor).create(params)
-        : <s.ICursor<TState>>(s.isCursorFunction(<s.CursorType<TState>>cursor) ? (<() => s.ICursor<TState>>cursor)() : cursor);
+        : <s.ICursor<TState>>(
+              (s.isCursorFunction(<s.CursorType<TState>>cursor)
+                  ? (<() => s.ICursor<TState>>cursor)()
+                  : cursor)
+          );
 }
 
 export interface IPair<TState, TParam> {
     cursor: s.ICursor<TState>;
-    handler: (state: TState, t: TParam) => TState
+    handler: (state: TState, t: TParam) => TState;
 }
 
-export const createActions = <TState, TParams>(...pairs: IPair<TState, TParams>[]): IAction<TParams> => {
+export const createActions = <TState, TParams>(
+    ...pairs: IPair<TState, TParams>[]
+): IAction<TParams> => {
     return (params: TParams) => {
         if (stateChanged === null)
             throw new Error(renderCallbackMustBeSetBefore);
@@ -79,7 +104,11 @@ export const createActions = <TState, TParams>(...pairs: IPair<TState, TParams>[
         for (var i in pairs)
             if (pairs.hasOwnProperty(i)) {
                 let pair = pairs[i];
-                if (changeStateWithQueue(pair.cursor, (state) => pair.handler(state, params)))
+                if (
+                    changeStateWithQueue(pair.cursor, (state) =>
+                        pair.handler(state, params)
+                    )
+                )
                     changed = true;
             }
         changed && stateChanged();
@@ -88,10 +117,12 @@ export const createActions = <TState, TParams>(...pairs: IPair<TState, TParams>[
 
 export interface IParamLessPair<TState> {
     cursor: s.ICursor<TState>;
-    handler: (state: TState) => TState
+    handler: (state: TState) => TState;
 }
 
-export const createParamLessActions = <TState>(...pairs: IParamLessPair<TState>[]): IParamLessAction => {
+export const createParamLessActions = <TState>(
+    ...pairs: IParamLessPair<TState>[]
+): IParamLessAction => {
     return () => {
         if (stateChanged === null)
             throw new Error(renderCallbackMustBeSetBefore);
@@ -112,17 +143,23 @@ interface IQueuedHandling<TState> {
 }
 
 let queueOfHandlers: IQueuedHandling<any>[] = [];
-function changeStateWithQueue<TState>(cursor: s.ICursor<TState>, handler: IInternalActionHandler<TState>)
-    : boolean {
+function changeStateWithQueue<TState>(
+    cursor: s.ICursor<TState>,
+    handler: IInternalActionHandler<TState>
+): boolean {
     queueOfHandlers.push({ cursor, handler });
-    if (queueOfHandlers.length > 1)
-        return false;
+    if (queueOfHandlers.length > 1) return false;
     let isStateChanged = false;
     while (queueOfHandlers.length > 0) {
         let n = queueOfHandlers[0];
-        if (h.isFunction(exceptionHandling) ? exceptionHandling() : exceptionHandling)
+        if (
+            h.isFunction(exceptionHandling)
+                ? exceptionHandling()
+                : exceptionHandling
+        )
             try {
-                isStateChanged = changeState(n.cursor, n.handler) || isStateChanged;
+                isStateChanged =
+                    changeState(n.cursor, n.handler) || isStateChanged;
             } catch (error) {
                 d.log('Error in action handling: ', error);
             }
@@ -135,12 +172,13 @@ function changeStateWithQueue<TState>(cursor: s.ICursor<TState>, handler: IInter
     return isStateChanged;
 }
 
-function changeState<TState>(cursor: s.ICursor<TState>, handler: IInternalActionHandler<TState>)
-    : boolean {
+function changeState<TState>(
+    cursor: s.ICursor<TState>,
+    handler: IInternalActionHandler<TState>
+): boolean {
     let oldState = s.getState(cursor);
     let newState = handler(oldState);
-    if (oldState === newState)
-        return false;
+    if (oldState === newState) return false;
     s.setState(cursor, newState);
     return true;
 }

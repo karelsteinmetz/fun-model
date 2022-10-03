@@ -1,5 +1,4 @@
-
-export type debugCallbackType = (message: string, params?: any) => void
+export type debugCallbackType = (message: string, params?: any) => void;
 
 export let debug: debugCallbackType | undefined = undefined;
 
@@ -9,4 +8,4 @@ export const bootstrap = (debugCallback: debugCallbackType | undefined) => {
 
 export const log = (message: string, params?: any) => {
     debug && debug(message, params);
-}
+};

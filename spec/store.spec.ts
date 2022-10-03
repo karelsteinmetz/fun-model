@@ -37,24 +37,32 @@ describe('store', () => {
             });
 
             it('returns false when value does not exist in state through cursor', () => {
-                const exists = s.isExistingCursor({ key: 'some.nested.notExistingState' });
+                const exists = s.isExistingCursor({
+                    key: 'some.nested.notExistingState',
+                });
 
                 expect(exists).toBeFalsy();
             });
         });
         describe('for Array', () => {
             beforeEach(() => {
-                s.bootstrap({ some: { nested: { arrayState: ['value1', 'value2'] } } });
+                s.bootstrap({
+                    some: { nested: { arrayState: ['value1', 'value2'] } },
+                });
             });
 
             it('returns true when value exists in state through cursor', () => {
-                const exists = s.isExistingCursor({ key: 'some.nested.arrayState.0' });
+                const exists = s.isExistingCursor({
+                    key: 'some.nested.arrayState.0',
+                });
 
                 expect(exists).toBeTruthy();
             });
 
             it('returns false when value does not exist in state through cursor', () => {
-                const exists = s.isExistingCursor({ key: 'some.nested.arrayState.5' });
+                const exists = s.isExistingCursor({
+                    key: 'some.nested.arrayState.5',
+                });
 
                 expect(exists).toBeFalsy();
             });
@@ -64,8 +72,9 @@ describe('store', () => {
     describe('getState', () => {
         describe('without booting', () => {
             it('throws if key does not exist', () => {
-                expect(() => s.getState<s.IState>(s.rootCursor))
-                    .toThrowError('Default state must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).');
+                expect(() => s.getState<s.IState>(s.rootCursor)).toThrowError(
+                    'Default state must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).'
+                );
             });
         });
 
@@ -91,17 +100,23 @@ describe('store', () => {
             });
 
             it('throws if key does not exist', () => {
-                expect(() => s.getState<s.IState>({ key: 'notExistingKey' }))
-                    .toThrowError('State for cursor key (notExistingKey) does not exist.');
+                expect(() =>
+                    s.getState<s.IState>({ key: 'notExistingKey' })
+                ).toThrowError(
+                    'State for cursor key (notExistingKey) does not exist.'
+                );
             });
 
             it('returns udefined if cursor allows that', () => {
                 givenStore({ some: { nested: { state: 'value' } } });
 
-                const state = s.getState({ key: 'some.nested.optional', isUndefinable: true });
+                const state = s.getState({
+                    key: 'some.nested.optional',
+                    isUndefinable: true,
+                });
 
                 expect(state).toBeUndefined();
-            })
+            });
         });
 
         describe('with booting and dynamic/array cursor', () => {
@@ -111,8 +126,11 @@ describe('store', () => {
 
             it('returns nested state in the array on specified index', () => {
                 givenTodoStore({
-                    todos: [{ done: false, name: 'First Todo' }, { done: false, name: 'Second Todo' }],
-                    nullableNumber: null
+                    todos: [
+                        { done: false, name: 'First Todo' },
+                        { done: false, name: 'Second Todo' },
+                    ],
+                    nullableNumber: null,
                 });
 
                 const state = s.getState<string>({ key: 'todos.1.name' });
@@ -123,7 +141,7 @@ describe('store', () => {
             it('returns full array when is as last key', () => {
                 givenTodoStore({
                     todos: [{ done: false, name: 'First Todo' }],
-                    nullableNumber: null
+                    nullableNumber: null,
                 });
 
                 const state = s.getState<tds.ITodo[]>(tds.todosCursor);
@@ -140,14 +158,15 @@ describe('store', () => {
     describe('setState', () => {
         describe('without booting', () => {
             it('throws if key does not exist', () => {
-                expect(() => s.setState(s.rootCursor, {}))
-                    .toThrowError('Default state must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).');
+                expect(() => s.setState(s.rootCursor, {})).toThrowError(
+                    'Default state must be set before first usage through bootstrap(defaultState, () => { yourRenderCallback(); }).'
+                );
             });
         });
 
         describe('with booting', () => {
             const rootCursorTestFixture: s.ICursor<IStateTestFixture> = {
-                key: ''
+                key: '',
             };
 
             beforeEach(() => {
@@ -156,22 +175,27 @@ describe('store', () => {
 
             it('throws if cursor has not existing key', () => {
                 const cursor = { key: 'invalid' };
-                expect(() => s.setState(cursor, {}))
-                    .toThrowError();
+                expect(() => s.setState(cursor, {})).toThrowError();
             });
 
             it('creates empty object if cursor has not existing key if told to', () => {
                 const cursor = { key: 'invalid' };
                 s.setState(cursor, {}, true);
 
-                expect(s.getState(s.rootCursor)).toEqual({ key: null, 'invalid': {} });
+                expect(s.getState(s.rootCursor)).toEqual({
+                    key: null,
+                    invalid: {},
+                });
             });
 
             it('creates neseted empty objects if cursor has not existing key if told to', () => {
                 const cursor = { key: 'not.existing.key' };
                 s.setState(cursor, {}, true);
 
-                expect(s.getState(s.rootCursor)).toEqual({ key: null, 'not': { 'existing': { key: {} } } });
+                expect(s.getState(s.rootCursor)).toEqual({
+                    key: null,
+                    not: { existing: { key: {} } },
+                });
             });
 
             it('freezes state', () => {
@@ -188,7 +212,9 @@ describe('store', () => {
 
                 s.setState({ key: 'some' }, { nested: { state: 'newValue' } });
 
-                expect((s.getState(rootCursorTestFixture)).some.nested.state).toBe('newValue');
+                expect(
+                    s.getState(rootCursorTestFixture).some.nested.state
+                ).toBe('newValue');
             });
 
             it('sets nested state by cursor when current value of sub state is empty string', () => {
@@ -196,7 +222,9 @@ describe('store', () => {
 
                 s.setState({ key: 'some' }, { nested: { state: 'newValue' } });
 
-                expect((s.getState(rootCursorTestFixture)).some.nested.state).toBe('newValue');
+                expect(
+                    s.getState(rootCursorTestFixture).some.nested.state
+                ).toBe('newValue');
             });
 
             it('sets new instance of root state', () => {
@@ -214,7 +242,10 @@ describe('store', () => {
                 givenStore({ some: { nested: { state: 'value' } } });
                 s.setState({ key: 'some' }, { nested: { state: 'newValue' } });
 
-                expect(debugCallback).toHaveBeenCalledWith('Current state:', s.getState(s.rootCursor));
+                expect(debugCallback).toHaveBeenCalledWith(
+                    'Current state:',
+                    s.getState(s.rootCursor)
+                );
             });
 
             it('sets new instances of nodes which is in the path to root state', () => {
@@ -232,7 +263,10 @@ describe('store', () => {
             it('can replace undefined with correct cursor', () => {
                 givenStore({ some: { nested: { state: 'value' } } });
 
-                s.setState({ key: 'some.nested.optional', isUndefinable: true }, 'newValue');
+                s.setState(
+                    { key: 'some.nested.optional', isUndefinable: true },
+                    'newValue'
+                );
 
                 const newState = s.getState(rootCursorTestFixture);
                 expect(newState.some.nested.optional).toBe('newValue');
@@ -246,31 +280,45 @@ describe('store', () => {
 
             it('sets nested state into array on specified index', () => {
                 givenTodoStore({
-                    todos: [{ done: false, name: 'First Todo' }, { done: false, name: 'Second Todo' }],
-                    nullableNumber: null
+                    todos: [
+                        { done: false, name: 'First Todo' },
+                        { done: false, name: 'Second Todo' },
+                    ],
+                    nullableNumber: null,
                 });
 
                 s.setState({ key: 'todos.1.name' }, 'New Todo Name');
 
-                expect(s.getState({ key: 'todos.1.name' })).toBe('New Todo Name');
+                expect(s.getState({ key: 'todos.1.name' })).toBe(
+                    'New Todo Name'
+                );
             });
 
             it('sets new state into array on specified index', () => {
                 givenTodoStore({
                     todos: [{ done: false, name: 'First Todo' }],
-                    nullableNumber: null
+                    nullableNumber: null,
                 });
 
-                s.setState({ key: 'todos.0' }, { done: false, name: 'Second Todo' });
+                s.setState(
+                    { key: 'todos.0' },
+                    { done: false, name: 'Second Todo' }
+                );
 
-                expect(s.getState({ key: 'todos.0' })).toEqual({ done: false, name: 'Second Todo' });
+                expect(s.getState({ key: 'todos.0' })).toEqual({
+                    done: false,
+                    name: 'Second Todo',
+                });
             });
 
             it('sets new instance of array when nested item has been changed', () => {
-                const storedTodos = [{ done: false, name: 'First Todo' }, { done: false, name: 'Second Todo' }];
+                const storedTodos = [
+                    { done: false, name: 'First Todo' },
+                    { done: false, name: 'Second Todo' },
+                ];
                 givenTodoStore({
                     todos: storedTodos,
-                    nullableNumber: null
+                    nullableNumber: null,
                 });
 
                 s.setState({ key: 'todos.1.name' }, 'New Todo Name');
@@ -281,10 +329,13 @@ describe('store', () => {
             it('sets full array', () => {
                 givenTodoStore({
                     todos: [{ done: false, name: 'First Todo' }],
-                    nullableNumber: null
+                    nullableNumber: null,
                 });
 
-                s.setState(tds.todosCursor, [{ done: false, name: 'Second Todo' }, { done: false, name: 'Third Todo' }]);
+                s.setState(tds.todosCursor, [
+                    { done: false, name: 'Second Todo' },
+                    { done: false, name: 'Third Todo' },
+                ]);
 
                 expect(s.getState(tds.todosCursor).length).toBe(2);
                 expect(s.getState(tds.todosCursor)[0].name).toBe('Second Todo');
@@ -316,7 +367,7 @@ describe('store', () => {
             it('write null to state', () => {
                 s.setState(s.rootCursor, <tds.ITodosState>{
                     todos: [{ done: false, name: 'First Todo' }],
-                    nullableNumber: 10
+                    nullableNumber: 10,
                 });
 
                 s.setState(tds.nullableNumberCursor, null);
@@ -340,6 +391,6 @@ interface IStateTestFixture extends s.IState {
         nested: {
             state: string;
             optional?: string;
-        }
+        };
     };
 }
