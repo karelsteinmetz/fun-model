@@ -10,6 +10,14 @@ Typescript 4.8.3 state type constraints.
 * removed IState constraint in CursorType,
 * fixed Object type check for shallowCopy.
 
+6.5.0
+--
+
+Set
+-
+
+Error for throw cases instead of simple message for better call stack in those cases.
+
 6.4.0
 --
 
