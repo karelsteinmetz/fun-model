@@ -9,15 +9,24 @@ export function shallowCopy<T>(
         const result = callback ? callback(source) : undefined;
         return result || source;
     }
-    if (typeof source === 'object') {
-        return objectShallowCopy(source, callback);
+
+    if (isObjectType(source)) {
+        return objectShallowCopy<T & Object>(
+            source,
+            callback ? (t) => callback(t) as T & Object : undefined
+        );
     }
 
     if (debug) {
         debug('Shallow copy should not be used for primitive types.');
     }
+
     const result = callback && callback(source);
     return result || source;
+}
+
+function isObjectType(source: unknown): source is Object {
+    return typeof source === 'object';
 }
 
 export function objectShallowCopy<T extends Object>(

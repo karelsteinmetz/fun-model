@@ -7,7 +7,8 @@ Fixed
 -
 
 Typescript 4.8.3 state type constraints.
-* Removed IState constraint in CursorType.
+* removed IState constraint in CursorType,
+* fixed Object type check for shallowCopy.
 
 6.4.0
 --
