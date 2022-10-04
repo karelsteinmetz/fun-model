@@ -1,5 +1,14 @@
 CHANGELOG
 ===
+7.0.0
+--
+
+Fixed
+-
+
+Typescript 4.8.3 state type constraints.
+* Removed IState constraint in CursorType.
+
 6.4.0
 --
 

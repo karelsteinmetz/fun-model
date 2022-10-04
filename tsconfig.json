@@ -1,17 +1,16 @@
 {
   "compilerOptions": {
     "allowJs": false,
+    "allowSyntheticDefaultImports": true,
     "checkJs": false,
     "declaration": true,
+    "downlevelIteration": true,
     "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
     "jsx": "react",
     "lib": [
-      "es5",
-      "dom",
-      "es2015.core",
-      "es2015.promise",
-      "es2015.iterable",
-      "es2015.collection"
+      "es2019",
+      "dom"
     ],
     "module": "commonjs",
     "noEmitHelpers": true,
@@ -21,14 +20,14 @@
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "preserveConstEnums": false,
-    "reactNamespace": "React",
+    "reactNamespace": "b",
     "removeComments": false,
-    "skipLibCheck": true,
+    "skipLibCheck": false,
     "skipDefaultLibCheck": true,
     "sourceMap": true,
+    "strict": true,
     "strictNullChecks": true,
-    "target": "es5",
+    "target": "es2019",
     "resolveJsonModule": true
   },
   "files": [],

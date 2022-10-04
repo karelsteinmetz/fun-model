@@ -3,9 +3,7 @@ import * as d from './debug';
 
 export interface IState {}
 
-export type CursorType<TState extends IState> =
-    | (() => ICursor<TState>)
-    | ICursor<TState>;
+export type CursorType<TState> = (() => ICursor<TState>) | ICursor<TState>;
 export function createNestedCursor<
     TState extends IState,
     TNestedState extends IState
@@ -28,7 +26,7 @@ export function createNestedCursorFactory<
         createNestedCursor<TRootState, TNestedState>(cursor, key);
 }
 
-export function isCursorFunction<TState extends IState>(
+export function isCursorFunction<TState>(
     cursor: CursorType<TState>
 ): cursor is () => ICursor<TState> {
     return typeof cursor == 'function';
@@ -158,13 +156,17 @@ export const setState = <TState>(
     if (!isSetDefaultState(state) || !isValidCursorKey(cursorValue))
         throw new Error('Invalid operation.');
 
-    state =
-        cursorValue.key === rootStateKey
-            ? updatedState
-            : setInnerState(state, cursorValue.key.split(stateSeparator));
+    state = isRootCursor(updatedState, cursorValue)
+        ? updatedState
+        : setInnerState(state, cursorValue.key.split(stateSeparator));
+
     if (h.isFunction(freezing) ? freezing() : freezing) h.deepFreeze(state);
     d.log('Current state:', state);
 };
+
+function isRootCursor(_: unknown, cursorValue: ICursor<unknown>): _ is IState {
+    return cursorValue.key === rootStateKey;
+}
 
 function checkSubstate<TCurrentState, TTargetState>(
     s: TCurrentState,
