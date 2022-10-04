@@ -366,7 +366,7 @@ describe('actionFactory', () => {
             it('calls render callback when one of states has been changed', () => {
                 givenStore(aState('nestedStateValue'));
 
-                let testAction = af.createParamLessActions(
+                let testAction = af.createParamLessActions<any>(
                     {
                         cursor: SomeCursorTestFixture,
                         handler: (state: ISomeState): ISomeState => {
